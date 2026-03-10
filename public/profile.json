@@ -1,0 +1,77 @@
+{
+  "intro": {
+    "name": "홍길동 (Hong Gildong)",
+    "role": "Full-Stack Developer",
+    "summary": "안정적이고 확장 가능한 웹 애플리케이션을 구축하는 데 열정을 가진 풀스택 개발자입니다. 사용자 경험을 중시하며, 새로운 기술을 배우고 적용하는 것을 좋아합니다.",
+    "email": "hgd@example.com",
+    "phone": "010-1234-5678",
+    "location": "Seoul, South Korea",
+    "socials": {
+      "github": "https://github.com/hgd",
+      "linkedin": "https://linkedin.com/in/hgd",
+      "blog": "https://hgd.dev"
+    }
+  },
+  "techStack": [
+    {
+      "category": "Frontend",
+      "skills": ["React", "Next.js", "TypeScript", "Tailwind CSS"]
+    },
+    {
+      "category": "Backend",
+      "skills": ["Node.js", "Express", "Python", "FastAPI"]
+    },
+    {
+      "category": "Database & Cloud",
+      "skills": ["PostgreSQL", "MongoDB", "AWS", "OCI (Oracle Cloud Infrastructure)"]
+    }
+  ],
+  "portfolio": [
+    {
+      "title": "개인 프로필 웹사이트 (Personal Bio)",
+      "description": "Next.js 15, Vercel, OCI를 활용하여 구축한 개인 포트폴리오 웹사이트. JSON 데이터를 클라우드 버킷에서 동적으로 가져와 렌더링하도록 구현했습니다.",
+      "link": "https://my-bio.example.com",
+      "github": "https://github.com/hgd/my-bio",
+      "technologies": ["Next.js", "TypeScript", "Tailwind CSS", "OCI"],
+      "date": "2024-03"
+    },
+    {
+      "title": "E-commerce 대시보드",
+      "description": "실시간 매출 데이터와 사용자 로그를 시각화하는 관리자용 대시보드. 대용량 데이터 처리 최적화를 통해 로딩 속도를 30% 개선했습니다.",
+      "technologies": ["React", "Redux", "Node.js", "PostgreSQL"],
+      "date": "2023-10"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Solutions Architect – Associate",
+      "issuer": "Amazon Web Services",
+      "date": "2023-05"
+    },
+    {
+      "name": "정보처리기사 (Engineer Information Processing)",
+      "issuer": "한국산업인력공단",
+      "date": "2022-08"
+    }
+  ],
+  "patents": [
+    {
+      "title": "블록체인 기반의 분산형 신원 인증 시스템 및 그 방법",
+      "number": "KR-10-2023-1234567",
+      "date": "2023-11",
+      "link": "http://kportal.kipris.or.kr/"
+    }
+  ],
+  "englishScores": [
+    {
+      "testName": "TOEIC",
+      "score": "950",
+      "date": "2024-01"
+    },
+    {
+      "testName": "OPIc",
+      "score": "AL",
+      "date": "2023-12"
+    }
+  ]
+}
