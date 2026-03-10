@@ -70,6 +70,15 @@ export function IntroSection({ intro }: { intro: ProfileData["intro"] }) {
             )}
          </div>
       )}
+
+      {/* Motto */}
+      {intro.motto && (
+        <div className="pt-8 mb-4">
+          <blockquote className="border-l-4 border-[var(--accent)] pl-4 italic text-lg text-[var(--text-muted)] bg-zinc-50 dark:bg-zinc-900/50 py-3 pr-4 rounded-r-md">
+            "{intro.motto}"
+          </blockquote>
+        </div>
+      )}
     </section>
   );
 }

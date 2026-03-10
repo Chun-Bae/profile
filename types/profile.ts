@@ -12,6 +12,7 @@ export interface Intro {
     linkedin?: string;
     blog?: string;
   };
+  motto?: string;
 }
 
 export interface TechStackCategory {

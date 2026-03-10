@@ -245,6 +245,9 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
                  <div><label className="text-xs text-[var(--text-muted)]">GitHub</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.github || ''} onChange={e=>setIntroData({...introData, socials: {...introData.socials, github: e.target.value}})}/></div>
                  <div><label className="text-xs text-[var(--text-muted)]">LinkedIn</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.linkedin || ''} onChange={e=>setIntroData({...introData, socials: {...introData.socials, linkedin: e.target.value}})}/></div>
                  <div><label className="text-xs text-[var(--text-muted)]">Blog</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.blog || ''} onChange={e=>setIntroData({...introData, socials: {...introData.socials, blog: e.target.value}})}/></div>
+
+                 <div className="sm:col-span-2 mt-4 border-b border-[var(--border)] pb-2"><h4 className="text-sm font-bold">Motto</h4></div>
+                 <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Motto Statement</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none italic" value={introData.motto || ''} onChange={e=>setIntroData({...introData, motto: e.target.value})} placeholder="e.g. Keep moving forward..."/></div>
                </div>
                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('intro')} />
             </div>
