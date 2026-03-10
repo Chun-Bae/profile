@@ -76,9 +76,8 @@ export default async function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="pt-12 mt-24 border-t border-[var(--border)] text-[var(--text-muted)] text-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-           <p>© {new Date().getFullYear()} {profile.intro.name}.</p>
-           <p>Generated dynamically from JSON.</p>
+        <footer className="pt-12 mt-24 border-t border-[var(--border)] text-[var(--text-muted)] text-sm text-center">
+           <p>Copyright © {new Date().getFullYear()} Chun-Bae. All rights reserved.</p>
         </footer>
       </main>
     </div>

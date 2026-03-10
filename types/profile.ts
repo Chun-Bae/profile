@@ -5,6 +5,8 @@ export interface Intro {
   email: string;
   phone?: string;
   location?: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
   socials: {
     github?: string;
     linkedin?: string;
