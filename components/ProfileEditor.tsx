@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { updateProfile } from '@/app/actions'
+import { updateProfile, checkPassword } from '@/app/actions'
 import { ProfileData } from '@/types/profile'
 import { IntroSection, TechStackSection, PortfolioSection, ListSection } from './ProfileSections'
 
@@ -12,6 +12,36 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
   const [editingSection, setEditingSection] = useState<string | null>(null)
   const [introData, setIntroData] = useState(initialProfile.intro)
   const [jsonText, setJsonText] = useState("")
+  
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
+  const [passwordInput, setPasswordInput] = useState('')
+  const [passwordError, setPasswordError] = useState(false)
+  const [isVerifying, setIsVerifying] = useState(false)
+
+  const handleToggleClick = () => {
+    if (isGlobalEditMode) {
+      setIsGlobalEditMode(false)
+      setEditingSection(null)
+    } else {
+      setShowPasswordPrompt(true)
+      setPasswordError(false)
+      setPasswordInput('')
+    }
+  }
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsVerifying(true)
+    const isValid = await checkPassword(passwordInput)
+    setIsVerifying(false)
+
+    if (isValid) {
+      setShowPasswordPrompt(false)
+      setIsGlobalEditMode(true)
+    } else {
+      setPasswordError(true)
+    }
+  }
   const [isPending, startTransition] = useTransition()
 
   const startEdit = (section: string, data: any) => {
@@ -81,19 +111,62 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
     <>
       {/* Global Edit Mode Toggle */}
       <button 
-        onClick={() => {
-          setIsGlobalEditMode(!isGlobalEditMode)
-          setEditingSection(null)
-        }}
-        className={`fixed bottom-6 right-6 z-40 px-5 py-3 rounded-full shadow-xl hover:scale-105 transition-all font-bold tracking-wide flex items-center gap-2 ${
+        onClick={handleToggleClick}
+        className={`fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-xl hover:scale-110 transition-all flex items-center justify-center ${
           isGlobalEditMode 
             ? 'bg-amber-500 text-white border border-amber-400' 
-            : 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border border-[var(--border)]'
+            : 'bg-zinc-900 dark:bg-zinc-100 text-[var(--background)] border border-[var(--border)]'
         }`}
         title="Toggle Edit Mode"
+        aria-label="Toggle Edit Mode"
       >
-        {isGlobalEditMode ? '👁️ View Mode' : '✏️ Edit Mode'}
+        {isGlobalEditMode ? (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        ) : (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        )}
       </button>
+
+      {/* Password Prompt Modal */}
+      {showPasswordPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <form onSubmit={handlePasswordSubmit} className="bg-[var(--background)] p-6 rounded-2xl shadow-2xl border border-[var(--border)] max-w-sm w-full mx-4 animate-in zoom-in-95">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Enter Password
+            </h2>
+            <div className="space-y-4">
+              <input 
+                type="password" 
+                autoFocus
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="Enter site password"
+                className="w-full px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              />
+              {passwordError && (
+                <p className="text-red-500 text-xs font-semibold">Incorrect password</p>
+              )}
+              <div className="flex justify-end gap-3 pt-2">
+                <button 
+                  type="button" 
+                  onClick={() => setShowPasswordPrompt(false)}
+                  className="px-4 py-2 text-sm bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isVerifying || !passwordInput}
+                  className="px-4 py-2 text-sm bg-[var(--foreground)] text-[var(--background)] font-bold rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  {isVerifying ? 'Verifying...' : 'Unlock'}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
 
       <main className="max-w-3xl mx-auto px-6 py-16 sm:py-24 space-y-16">
         

@@ -41,3 +41,9 @@ export async function updateProfile(prevState: any, formData: FormData) {
   
   return { success: 'Profile updated successfully!' }
 }
+
+export async function checkPassword(password: string) {
+  const sitePassword = process.env.SITE_PASSWORD || '1234';
+  return password === sitePassword;
+}
+
