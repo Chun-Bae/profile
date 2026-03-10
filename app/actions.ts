@@ -47,3 +47,34 @@ export async function checkPassword(password: string) {
   return password === sitePassword;
 }
 
+export async function uploadImage(formData: FormData) {
+  const file = formData.get('file') as File;
+  const type = formData.get('type') as 'avatar' | 'banner';
+  
+  const ociUrl = type === 'avatar' ? process.env.OCI_AVATAR_URL : process.env.OCI_BANNER_URL;
+
+  if (!ociUrl) {
+    return { error: `OCI_${type.toUpperCase()}_URL 환경 변수가 .env.local에 설정되어 있지 않습니다.` }
+  }
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const res = await fetch(ociUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': file.type || 'application/octet-stream',
+      },
+      body: Buffer.from(arrayBuffer),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      return { error: `업로드 실패: ${res.status} - ${text}` }
+    }
+    
+    revalidatePath('/');
+    return { success: true }
+  } catch (error: any) {
+    return { error: `업로드 오류: ${error.message}` }
+  }
+}
