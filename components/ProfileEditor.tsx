@@ -227,24 +227,18 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
                  <div><label className="text-xs text-[var(--text-muted)]">Phone</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.phone || ''} onChange={e=>setIntroData({...introData, phone: e.target.value})}/></div>
                  <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Location</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.location || ''} onChange={e=>setIntroData({...introData, location: e.target.value})}/></div>
                  <div className="sm:col-span-2">
-                   <label className="text-xs text-[var(--text-muted)]">Avatar URL (Add <b>OCI_AVATAR_URL</b> in .env to use Upload)</label>
-                   <div className="flex gap-2">
-                     <input className="flex-1 w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.avatarUrl || ''} onChange={e=>setIntroData({...introData, avatarUrl: e.target.value})} placeholder="https://..." />
-                     <label className="cursor-pointer flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
-                       {isUploadingAvatar ? <span className="animate-pulse">Uploading...</span> : 'Upload Image'}
-                       <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'avatar')} />
-                     </label>
-                   </div>
+                   <label className="text-xs text-[var(--text-muted)] block mb-1">Avatar Image</label>
+                   <label className="cursor-pointer inline-flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
+                     {isUploadingAvatar ? <span className="animate-pulse">Uploading...</span> : 'Upload New Avatar 📤'}
+                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'avatar')} />
+                   </label>
                  </div>
                  <div className="sm:col-span-2">
-                   <label className="text-xs text-[var(--text-muted)]">Banner URL (Add <b>OCI_BANNER_URL</b> in .env to use Upload)</label>
-                   <div className="flex gap-2">
-                     <input className="flex-1 w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.bannerUrl || ''} onChange={e=>setIntroData({...introData, bannerUrl: e.target.value})} placeholder="https://..." />
-                     <label className="cursor-pointer flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
-                       {isUploadingBanner ? <span className="animate-pulse">Uploading...</span> : 'Upload Image'}
-                       <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'banner')} />
-                     </label>
-                   </div>
+                   <label className="text-xs text-[var(--text-muted)] block mb-1">Banner Image</label>
+                   <label className="cursor-pointer inline-flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
+                     {isUploadingBanner ? <span className="animate-pulse">Uploading...</span> : 'Upload New Banner 📤'}
+                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'banner')} />
+                   </label>
                  </div>
                  
                  <div className="sm:col-span-2 mt-4 border-b border-[var(--border)] pb-2"><h4 className="text-sm font-bold">Socials</h4></div>
