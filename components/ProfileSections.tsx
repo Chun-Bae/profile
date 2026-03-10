@@ -22,19 +22,19 @@ export function IntroSection({ intro }: { intro: ProfileData["intro"] }) {
       )}
 
       <div className="space-y-2 mt-2">
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-[var(--foreground)]">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--foreground)]">
           {intro.name}
         </h1>
-        <h2 className="text-xl sm:text-2xl font-medium text-[var(--text-muted)]">
+        <h2 className="text-lg sm:text-xl font-medium text-[var(--text-muted)]">
           {intro.role}
         </h2>
       </div>
 
-      <p className="text-base sm:text-lg leading-relaxed text-[var(--foreground)]">
+      <p className="text-sm sm:text-base leading-relaxed text-[var(--foreground)]">
         {intro.summary}
       </p>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--text-muted)] mt-6">
+      <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm text-[var(--text-muted)] mt-6">
         {intro.location && (
           <span className="flex items-center gap-1">
             <span aria-hidden="true">📍</span> {intro.location}
@@ -74,7 +74,7 @@ export function IntroSection({ intro }: { intro: ProfileData["intro"] }) {
       {/* Motto */}
       {intro.motto && (
         <div className="pt-8 mb-4">
-          <blockquote className="border-l-4 border-[var(--accent)] pl-4 italic text-lg text-[var(--text-muted)] bg-zinc-50 dark:bg-zinc-900/50 py-3 pr-4 rounded-r-md">
+          <blockquote className="border-l-4 border-[var(--accent)] pl-4 italic text-base text-[var(--text-muted)] bg-zinc-50 dark:bg-zinc-900/50 py-3 pr-4 rounded-r-md">
             "{intro.motto}"
           </blockquote>
         </div>
