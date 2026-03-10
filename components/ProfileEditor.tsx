@@ -258,8 +258,6 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
             </>
           )}
         </div>
-        
-        <hr className="prose-hr" />
 
         {/* Tech Stack */}
         <div className="relative group">
