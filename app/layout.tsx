@@ -12,14 +12,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+    : process.env.VERCEL_URL
+      ? new URL(`https://${process.env.VERCEL_URL}`)
+      : new URL("http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: baseUrl,
   title: "AI Software Engineer - YuSeok Choung",
-  description: "Personal portfolio and biography of YuSeok Choung, AI Engineer. Exploring AI, Machine Learning, and Software Development.",
+  description: "YuSeok Choung | AI Software Engineer Profile",
   openGraph: {
     title: "AI Software Engineer - YuSeok Choung",
-    description: "Personal portfolio and biography of YuSeok Choung, AI Engineer. Exploring AI, Machine Learning, and Software Development.",
-    type: "website",
+    description: "YuSeok Choung | AI Software Engineer Profile",
+    url: baseUrl,
+    siteName: "AI Software Engineer - YuSeok Choung",
     locale: "ko_KR",
+    images: [
+      {
+        url: new URL("/og.png", baseUrl),
+        width: 1200,
+        height: 630,
+        alt: "YuSeok Choung",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Software Engineer - YuSeok Choung",
+    description: "YuSeok Choung | AI Software Engineer Profile",
+    images: [new URL("/og.png", baseUrl)],
   },
 };
 
