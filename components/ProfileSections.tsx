@@ -102,7 +102,7 @@ export function TechStackSection({ stack }: { stack: ProfileData["techStack"] })
   );
 }
 
-export function PortfolioSection({ items, onDetail }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void }) {
+export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void, lang?: 'ko' | 'en' }) {
   return (
     <div className="space-y-8">
       {items.map((item, i) => (
@@ -145,7 +145,7 @@ export function PortfolioSection({ items, onDetail }: { items: ProfileData["port
                   onClick={() => onDetail(item)}
                   className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity"
                 >
-                  자세히 보기 →
+                  {lang === 'ko' ? '자세히 보기 →' : 'View Details →'}
                 </button>
               )}
             </div>

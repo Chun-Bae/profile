@@ -439,7 +439,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                   <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
                 </h2>
                 {profile.portfolio?.length > 0 ? (
-                  <PortfolioSection items={profile.portfolio} onDetail={setSelectedProject} />
+                  <PortfolioSection items={profile.portfolio} onDetail={setSelectedProject} lang={currentLang} />
                 ) : (
                   <p className="text-sm text-[var(--text-muted)] italic">No projects added yet.</p>
                 )}
