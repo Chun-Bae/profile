@@ -148,21 +148,28 @@ export function PortfolioSection({ items }: { items: ProfileData["portfolio"] })
   );
 }
 
-export function ListSection({ items }: { items: { title: string, subtitle: string, date: string, link?: string }[] }) {
+export function ListSection({ items }: { items: { title: string, subtitle: string, date: string, link?: string, category?: string }[] }) {
   return (
     <ul className="space-y-6 list-none p-0 m-0">
       {items.map((item, i) => (
         <li key={i} className="border-l-2 border-[var(--border)] pl-4 py-1">
            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-1">
-             <h3 className="text-lg font-bold text-[var(--foreground)]">
-                {item.link ? (
-                  <a href={item.link} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] hover:underline">
-                    {item.title} ↗
-                  </a>
-                ) : (
-                  item.title
-                )}
-             </h3>
+             <div className="flex flex-wrap items-center gap-2">
+               <h3 className="text-lg font-bold text-[var(--foreground)]">
+                  {item.link ? (
+                    <a href={item.link} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] hover:underline">
+                      {item.title} ↗
+                    </a>
+                  ) : (
+                    item.title
+                  )}
+               </h3>
+               {item.category && (
+                 <span className="px-2 py-0.5 text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-[var(--text-muted)] border border-[var(--border)] rounded-md">
+                   {item.category}
+                 </span>
+               )}
+             </div>
              <time className="text-sm text-[var(--text-muted)] whitespace-nowrap">{item.date}</time>
            </div>
            <p className="text-[var(--foreground)]">{item.subtitle}</p>

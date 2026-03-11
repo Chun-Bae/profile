@@ -40,6 +40,7 @@ export interface Patent {
   number: string;
   date: string;
   link?: string;
+  category?: string;
 }
 
 export interface EnglishScore {
