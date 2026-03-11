@@ -329,7 +329,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               { id: 'intro', ko: '소개', en: 'Intro' },
               { id: 'techStack', ko: '기술 스택', en: 'Skills' },
               { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
-              { id: 'experiences', ko: '경력/대외활동', en: 'Experience' },
+              { id: 'experiences', ko: '대외활동', en: 'Activities' },
               { id: 'awards', ko: '수상/대회', en: 'Awards' },
               { id: 'certifications', ko: '자격증', en: 'Certifications' },
               { id: 'patents', ko: '특허 및 등록증', en: 'Patents & Registrations' },
@@ -456,7 +456,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             ((profile.experiences && profile.experiences.length > 0) || isGlobalEditMode) && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  {currentLang === 'ko' ? '경력 / 대외활동' : 'Experience & Activities'}
+                  {currentLang === 'ko' ? '대외활동' : 'Activities'}
                   <EditButton onClick={() => startEdit('experiences', profile.experiences || [])} />
                 </h2>
                 {profile.experiences && profile.experiences.length > 0 ? (
