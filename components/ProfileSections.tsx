@@ -184,6 +184,19 @@ export function ListSection({ items }: { items: { title: string, subtitle: strin
   );
 }
 
+const getPrizeColor = (prize: string) => {
+  const lowerPrize = prize.toLowerCase();
+  if (lowerPrize.includes('대상') || lowerPrize.includes('grand')) return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800/40';
+  if (lowerPrize.includes('금상') || lowerPrize.includes('gold')) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/40';
+  if (lowerPrize.includes('은상') || lowerPrize.includes('silver')) return 'bg-zinc-200 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700';
+  if (lowerPrize.includes('동상') || lowerPrize.includes('bronze')) return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800/40';
+  if (lowerPrize.includes('최우수') || lowerPrize.includes('우수상') || lowerPrize.includes('excellence')) return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/40';
+  if (lowerPrize.includes('장려') || lowerPrize.includes('참가') || lowerPrize.includes('participant')) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40';
+  
+  // Default fallback
+  return 'bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 border-[var(--border)]';
+};
+
 export function AwardSection({ items }: { items: ProfileData["awards"] }) {
   if (!items || items.length === 0) return null;
   return (
@@ -196,7 +209,7 @@ export function AwardSection({ items }: { items: ProfileData["awards"] }) {
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-lg font-bold text-[var(--foreground)] truncate">{item.title}</h3>
                 {item.prize && (
-                  <span className="px-2 py-0.5 text-xs font-bold leading-none bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40 rounded-md">
+                  <span className={`px-2 py-0.5 text-xs font-bold leading-none border rounded-md whitespace-nowrap ${getPrizeColor(item.prize)}`}>
                     {item.prize}
                   </span>
                 )}
