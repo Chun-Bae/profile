@@ -140,6 +140,16 @@ export function PortfolioSection({ items, onDetail, lang = 'ko', expandedIndices
             {/* Expandable Content */}
             {isExpanded && (
               <div className="px-6 pb-6 pt-2 border-t border-[var(--border)]">
+                {item.badges && item.badges.length > 0 && (
+                  <div className="flex gap-2 mb-3"> 
+                    {item.badges.map((badge, b) => (
+                      <span key={b} className="px-2 py-0.5 text-[0.7rem] font-extrabold uppercase tracking-widest text-[var(--background)] bg-[var(--foreground)] rounded-md shadow-sm">
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                )}
+  
                 <p className="text-[var(--text-muted)] leading-relaxed mb-6 flex-grow whitespace-pre-wrap">
                   {item.description}
                 </p>

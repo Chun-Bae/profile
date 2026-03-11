@@ -27,6 +27,7 @@ export interface PortfolioItem {
   github?: string;
   sourceLinks?: { name: string; url: string }[];
   technologies: string[];
+  badges?: string[];
   date: string;
   mdFile?: string;
 }
