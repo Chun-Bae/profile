@@ -279,10 +279,10 @@ export function ExperienceSection({ items }: { items: ProfileData["experiences"]
                  <h3 className="text-xl font-bold text-[var(--foreground)] leading-snug">
                    {item.link ? (
                      <a href={item.link} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] hover:underline">
-                       {item.company} ↗
+                       {item.organization} ↗
                      </a>
                    ) : (
-                     item.company
+                     item.organization
                    )}
                  </h3>
                  <span className="text-sm font-semibold text-[var(--text-muted)] whitespace-nowrap bg-zinc-100 dark:bg-zinc-800/50 px-2 py-0.5 rounded-md border border-[var(--border)] shrink-0 mt-1 sm:mt-0">
