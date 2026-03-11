@@ -8,7 +8,9 @@ export function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/login') ||
     request.nextUrl.pathname.startsWith('/_next') ||
     request.nextUrl.pathname.startsWith('/profile.json') ||
-    request.nextUrl.pathname === '/favicon.ico'
+    request.nextUrl.pathname === '/favicon.ico' ||
+    request.nextUrl.pathname === '/og.png' ||
+    request.nextUrl.pathname === '/icon.png'
   ) {
     return NextResponse.next();
   }
