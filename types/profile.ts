@@ -25,6 +25,7 @@ export interface PortfolioItem {
   description: string;
   link?: string;
   github?: string;
+  sourceLinks?: { name: string; url: string }[];
   technologies: string[];
   date: string;
   mdFile?: string;
@@ -63,6 +64,7 @@ export interface Education {
   schoolName: string;
   status: string;
   date: string;
+  major?: string;
   gpa?: string;
   notes?: string;
   logoUrl?: string;

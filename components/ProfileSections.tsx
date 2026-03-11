@@ -102,7 +102,7 @@ export function TechStackSection({ stack }: { stack: ProfileData["techStack"] })
   );
 }
 
-export function PortfolioSection({ items, onDetail }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void }) {
+export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void, lang?: 'ko' | 'en' }) {
   return (
     <div className="space-y-8">
       {items.map((item, i) => (
@@ -140,12 +140,17 @@ export function PortfolioSection({ items, onDetail }: { items: ProfileData["port
                   Source Code ↗
                 </a>
               )}
+              {item.sourceLinks?.map((link, k) => (
+                <a key={k} href={link.url} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
+                  {link.name} ↗
+                </a>
+              ))}
               {item.mdFile && onDetail && (
                 <button
                   onClick={() => onDetail(item)}
                   className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity"
                 >
-                  자세히 보기 →
+                  {lang === 'ko' ? '자세히 보기 →' : 'View Details →'}
                 </button>
               )}
             </div>
@@ -247,7 +252,7 @@ export function AwardSection({ items }: { items: ProfileData["awards"] }) {
   );
 }
 
-export function EducationSection({ items }: { items: ProfileData["educations"] }) {
+export function EducationSection({ items, lang = 'ko' }: { items: ProfileData["educations"], lang?: 'ko' | 'en' }) {
   if (!items || items.length === 0) return null;
   return (
     <ul className="space-y-4 list-none p-0 m-0">
@@ -266,7 +271,24 @@ export function EducationSection({ items }: { items: ProfileData["educations"] }
                 <time className="text-[var(--text-muted)] font-medium bg-zinc-100 dark:bg-zinc-800/50 px-2 py-1 rounded-md">{item.date}</time>
               </div>
             </div>
-            {item.gpa && <p className="text-sm text-[var(--foreground)] mt-3 flex items-center gap-2"><span className="font-bold text-[var(--text-muted)]">GPA</span> {item.gpa}</p>}
+            {(item.major || item.gpa) && (
+              <p className="text-sm text-[var(--foreground)] mt-3 flex items-center gap-4">
+                {item.major && (
+                  <span className="flex items-center gap-1.5">
+                    <span className="font-bold text-[var(--text-muted)]">
+                      {lang === 'ko' ? '전공' : 'Major'}
+                    </span>
+                    {item.major}
+                  </span>
+                )}
+                {item.gpa && (
+                  <span className="flex items-center gap-1.5">
+                    <span className="font-bold text-[var(--text-muted)]">GPA</span>
+                    {item.gpa}
+                  </span>
+                )}
+              </p>
+            )}
             {item.notes && <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">{item.notes}</p>}
           </div>
         </li>
