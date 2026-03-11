@@ -15,6 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AI Software Engineer - YuSeok Choung",
   description: "Personal portfolio and biography of YuSeok Choung, AI Engineer. Exploring AI, Machine Learning, and Software Development.",
+  openGraph: {
+    title: "AI Software Engineer - YuSeok Choung",
+    description: "Personal portfolio and biography of YuSeok Choung, AI Engineer. Exploring AI, Machine Learning, and Software Development.",
+    type: "website",
+    locale: "ko_KR",
+  },
 };
 
 export default function RootLayout({
