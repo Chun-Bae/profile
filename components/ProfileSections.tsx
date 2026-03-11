@@ -115,8 +115,36 @@ export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: Prof
     );
   };
 
+  const isAllExpanded = expandedIndices.length === items.length;
+  const toggleAll = () => {
+    if (isAllExpanded) {
+      setExpandedIndices([]);
+    } else {
+      setExpandedIndices(items.map((_, i) => i));
+    }
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
+      {/* Toggle All Button */}
+      <div className="flex justify-end px-2">
+        <button
+          onClick={toggleAll}
+          className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none"
+        >
+          <svg
+            className={`w-4 h-4 transition-transform duration-300 ${isAllExpanded ? 'rotate-180' : ''}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+          {isAllExpanded 
+            ? (lang === 'ko' ? '전체 접기' : 'Collapse All') 
+            : (lang === 'ko' ? '전체 펼치기' : 'Expand All')}
+        </button>
+      </div>
+
+      <div className="space-y-8">
       {items.map((item, i) => {
         const isExpanded = expandedIndices.includes(i);
         return (
@@ -190,6 +218,7 @@ export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: Prof
           </article>
         );
       })}
+    </div>
     </div>
   );
 }
