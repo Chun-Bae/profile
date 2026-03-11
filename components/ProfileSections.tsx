@@ -105,53 +105,22 @@ export function TechStackSection({ stack }: { stack: ProfileData["techStack"] })
   );
 }
 
-export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void, lang?: 'ko' | 'en' }) {
-  // By default, expand the first project, collapse the rest (or expand all, but first one expanded is cleaner for 5+ parts)
-  const [expandedIndices, setExpandedIndices] = useState<number[]>([0]);
-
-  const toggleExpand = (index: number) => {
-    setExpandedIndices(prev =>
-      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
-    );
-  };
-
-  const isAllExpanded = expandedIndices.length === items.length;
-  const toggleAll = () => {
-    if (isAllExpanded) {
-      setExpandedIndices([]);
-    } else {
-      setExpandedIndices(items.map((_, i) => i));
-    }
-  };
-
+export function PortfolioSection({ items, onDetail, lang = 'ko', expandedIndices, onToggleExpand }: { 
+  items: ProfileData["portfolio"], 
+  onDetail?: (item: ProfileData["portfolio"][0]) => void, 
+  lang?: 'ko' | 'en',
+  expandedIndices: number[],
+  onToggleExpand: (index: number) => void
+}) {
   return (
-    <div className="space-y-4">
-      {/* Toggle All Button */}
-      <div className="flex justify-end px-2">
-        <button
-          onClick={toggleAll}
-          className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none"
-        >
-          <svg
-            className={`w-4 h-4 transition-transform duration-300 ${isAllExpanded ? 'rotate-180' : ''}`}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-          {isAllExpanded 
-            ? (lang === 'ko' ? '전체 접기' : 'Collapse All') 
-            : (lang === 'ko' ? '전체 펼치기' : 'Expand All')}
-        </button>
-      </div>
-
-      <div className="space-y-8">
+    <div className="space-y-8">
       {items.map((item, i) => {
         const isExpanded = expandedIndices.includes(i);
         return (
           <article key={i} className="flex flex-col h-full border border-[var(--border)] rounded-xl bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] hover:shadow-md transition-all overflow-hidden">
             {/* Header / Toggle Button */}
             <button 
-              onClick={() => toggleExpand(i)}
+              onClick={() => onToggleExpand(i)}
               className="flex justify-between items-center w-full text-left p-6 gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors focus:outline-none"
             >
               <h3 className="text-xl font-bold text-[var(--foreground)] leading-tight flex flex-1 items-center gap-3">
@@ -218,7 +187,6 @@ export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: Prof
           </article>
         );
       })}
-    </div>
     </div>
   );
 }

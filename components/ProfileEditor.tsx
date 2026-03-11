@@ -38,6 +38,9 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   
   const [activeSection, setActiveSection] = useState<string>('intro')
 
+  // Lifted state for Portfolio Expand/Collapse All
+  const [expandedPortfolioIndices, setExpandedPortfolioIndices] = useState<number[]>([0]);
+
   useEffect(() => {
     if (!mounted) return;
     const observer = new IntersectionObserver(
@@ -434,12 +437,46 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           ) : (
             (profile.portfolio?.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
-                <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  {currentLang === 'ko' ? '프로젝트' : 'Projects'}
-                  <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
-                </h2>
+                <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-2 relative gap-4">
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    {currentLang === 'ko' ? '프로젝트' : 'Projects'}
+                    <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
+                  </h2>
+                  {profile.portfolio?.length > 0 && (
+                    <button
+                      onClick={() => {
+                        if (expandedPortfolioIndices.length === profile.portfolio.length) {
+                          setExpandedPortfolioIndices([]);
+                        } else {
+                          setExpandedPortfolioIndices(profile.portfolio.map((_, i) => i));
+                        }
+                      }}
+                      className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none"
+                    >
+                      <svg
+                        className={`w-4 h-4 transition-transform duration-300 ${expandedPortfolioIndices.length === profile.portfolio.length ? 'rotate-180' : ''}`}
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                      {expandedPortfolioIndices.length === profile.portfolio.length 
+                        ? (currentLang === 'ko' ? '전체 접기' : 'Collapse All') 
+                        : (currentLang === 'ko' ? '전체 펼치기' : 'Expand All')}
+                    </button>
+                  )}
+                </div>
                 {profile.portfolio?.length > 0 ? (
-                  <PortfolioSection items={profile.portfolio} onDetail={setSelectedProject} lang={currentLang} />
+                  <PortfolioSection 
+                    items={profile.portfolio} 
+                    onDetail={setSelectedProject} 
+                    lang={currentLang} 
+                    expandedIndices={expandedPortfolioIndices}
+                    onToggleExpand={(index) => {
+                      setExpandedPortfolioIndices(prev => 
+                        prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+                      );
+                    }}
+                  />
                 ) : (
                   <p className="text-sm text-[var(--text-muted)] italic">No projects added yet.</p>
                 )}
