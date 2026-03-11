@@ -437,7 +437,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           ) : (
             (profile.portfolio?.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
-                <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-2 relative gap-4">
+                <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-2 relative gap-4 pr-10">
                   <h2 className="text-2xl font-bold tracking-tight">
                     {currentLang === 'ko' ? '프로젝트' : 'Projects'}
                     <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
