@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YuSeok Choung - AI Engineer",
+  title: "AI Software Engineer - YuSeok Choung",
   description: "Personal portfolio and biography of YuSeok Choung, AI Engineer. Exploring AI, Machine Learning, and Software Development.",
 };
 
