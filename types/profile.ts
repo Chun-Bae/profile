@@ -75,6 +75,9 @@ export interface Experience {
   link?: string;
 }
 
+// Club has the same structure as Experience
+export type Club = Experience;
+
 export interface ProfileData {
   intro: Intro;
   techStack: TechStackCategory[];
@@ -85,4 +88,5 @@ export interface ProfileData {
   awards?: Award[];
   educations?: Education[];
   experiences?: Experience[];
+  clubs?: Club[];
 }

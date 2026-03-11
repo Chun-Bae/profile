@@ -330,6 +330,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               { id: 'techStack', ko: '기술 스택', en: 'Skills' },
               { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
               { id: 'experiences', ko: '대외활동', en: 'Activities' },
+              { id: 'clubs', ko: '동아리', en: 'Clubs' },
               { id: 'awards', ko: '수상/대회', en: 'Awards' },
               { id: 'certifications', ko: '자격증', en: 'Certifications' },
               { id: 'patents', ko: '특허 및 등록증', en: 'Patents & Registrations' },
@@ -463,6 +464,31 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                   <ExperienceSection items={profile.experiences} />
                 ) : (
                   <p className="text-sm text-[var(--text-muted)] italic">No experiences added yet.</p>
+                )}
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Clubs */}
+        <div className="relative group mt-16 scroll-mt-24" id="clubs">
+          {editingSection === 'clubs' ? (
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+               <h3 className="text-lg font-bold mb-2">Edit Clubs (JSON array)</h3>
+               <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('clubs')} />
+            </div>
+          ) : (
+            ((profile.clubs && profile.clubs.length > 0) || isGlobalEditMode) && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                  {currentLang === 'ko' ? '동아리' : 'Clubs'}
+                  <EditButton onClick={() => startEdit('clubs', profile.clubs || [])} />
+                </h2>
+                {profile.clubs && profile.clubs.length > 0 ? (
+                  <ExperienceSection items={profile.clubs} />
+                ) : (
+                  <p className="text-sm text-[var(--text-muted)] italic">No clubs added yet.</p>
                 )}
               </div>
             )
