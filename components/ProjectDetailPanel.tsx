@@ -21,7 +21,8 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
 
     if (item.mdFile) {
       setLoading(true)
-      fetch(`/api/project/${encodeURIComponent(item.mdFile)}`)
+      // mdFile은 전체 URL (오라클 버킷, GitHub Raw 등)
+      fetch(item.mdFile)
         .then(res => res.ok ? res.text() : null)
         .then(text => { setMdContent(text); setLoading(false) })
         .catch(() => setLoading(false))
