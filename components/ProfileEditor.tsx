@@ -329,6 +329,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               { id: 'intro', ko: '소개', en: 'Intro' },
               { id: 'techStack', ko: '기술 스택', en: 'Skills' },
               { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
+              { id: 'experiences', ko: '경력/대외활동', en: 'Experience' },
               { id: 'awards', ko: '수상/대회', en: 'Awards' },
               { id: 'certifications', ko: '자격증', en: 'Certifications' },
               { id: 'patents', ko: '특허 및 등록증', en: 'Patents & Registrations' },
