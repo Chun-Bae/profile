@@ -83,28 +83,49 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isUploadingBanner, setIsUploadingBanner] = useState(false)
+  const [isUploadingAsset, setIsUploadingAsset] = useState(false)
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner') => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner' | 'generic') => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
     
     if (type === 'avatar') setIsUploadingAvatar(true);
-    else setIsUploadingBanner(true);
+    else if (type === 'banner') setIsUploadingBanner(true);
+    else setIsUploadingAsset(true);
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('type', type);
 
+    // Maintain specific filenames for legacy items, use pure safe filenames for generic
+    let filename = file.name;
+    if (type === 'avatar') filename = 'profile_img.jpeg';
+    else if (type === 'banner') filename = 'profile_img_banner.jpg';
+    
+    // URL-safe filename
+    const safeFilename = encodeURIComponent(filename.replace(/\s+/g, '_'));
+    formData.append('filename', safeFilename);
+
     const res = await uploadImage(formData);
 
     if (type === 'avatar') setIsUploadingAvatar(false);
-    else setIsUploadingBanner(false);
+    else if (type === 'banner') setIsUploadingBanner(false);
+    else setIsUploadingAsset(false);
 
     if (res?.error) {
       alert(res.error);
     } else {
-      const currentUrl = type === 'avatar' ? introData.avatarUrl : introData.bannerUrl;
-      const baseUrl = currentUrl ? currentUrl.split('?')[0] : '';
+      if (type === 'generic') {
+        const urlToCopy = res.url || '';
+        navigator.clipboard.writeText(urlToCopy).then(() => {
+          alert(`업로드 완료! 이미지 링크가 클립보드에 복사되었습니다.\n\n${urlToCopy}`);
+        }).catch(() => {
+          prompt('업로드 완료! 링크를 복사해주세요:', urlToCopy);
+        });
+        return;
+      }
+
+      const baseUrl = res.url || '';
       if (baseUrl) {
          const newUrl = baseUrl + '?t=' + Date.now();
          const updatedProfile = {
@@ -215,6 +236,18 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
         )}
       </button>
+
+      {/* Generic Asset Uploader */}
+      {isGlobalEditMode && (
+        <label className="fixed bottom-20 right-6 p-3 rounded-full shadow-xl transition-all z-20 hover:scale-105 active:scale-95 bg-blue-500 text-white border border-blue-400 cursor-pointer" title="Upload Generic Asset (e.g. Patent Image)">
+          {isUploadingAsset ? (
+            <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          )}
+          <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleUpload(e, 'generic')} />
+        </label>
+      )}
 
       {/* Top Controls: Theme & Language */}
       <div className="fixed top-4 sm:top-8 right-4 sm:right-8 z-50 flex items-center gap-3">
