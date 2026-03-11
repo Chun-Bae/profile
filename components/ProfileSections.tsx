@@ -187,9 +187,9 @@ export function ListSection({ items }: { items: { title: string, subtitle: strin
 const getPrizeColor = (prize: string) => {
   const lowerPrize = prize.toLowerCase();
   
-  // 대상 (Grand) -> Rainbow gradient
+  // 대상 (Grand) -> Deep Gold
   if (lowerPrize.includes('대상') || lowerPrize.includes('grand')) 
-    return 'bg-[linear-gradient(135deg,#ef4444,#eab308,#22c55e,#3b82f6,#a855f7)] text-white border-transparent shadow-sm';
+    return 'bg-gradient-to-br from-amber-300 to-amber-500 dark:from-amber-700 dark:to-amber-900 text-amber-950 dark:text-amber-50 border-amber-500 dark:border-amber-600 shadow-sm';
   
   // 금상 (Gold) = 최우수상 (Excellence)
   if (lowerPrize.includes('금상') || lowerPrize.includes('gold') || lowerPrize.includes('최우수') || lowerPrize.includes('excellence')) 
