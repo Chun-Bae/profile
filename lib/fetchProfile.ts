@@ -16,9 +16,11 @@ const defaultProfile: ProfileData = {
 };
 
 export async function fetchProfile(lang: 'ko' | 'en' = 'ko'): Promise<ProfileData> {
-  const ociUrl = lang === 'ko' ? process.env.OCI_DATA_URL_KO : process.env.OCI_DATA_URL_EN;
+  const bucketUrl = process.env.OCI_BUCKET_URL;
 
-  if (ociUrl) {
+  if (bucketUrl) {
+    const filename = `profile_${lang}.json`;
+    const ociUrl = bucketUrl.endsWith('/') ? `${bucketUrl}${filename}` : `${bucketUrl}/${filename}`;
     try {
       const res = await fetch(ociUrl, {
         next: { revalidate: 0 }, // For faster refresh during edit or we can keep 60
@@ -33,7 +35,7 @@ export async function fetchProfile(lang: 'ko' | 'en' = 'ko'): Promise<ProfileDat
       console.error(`Error fetching ${lang} profile from OCI URL:`, error);
     }
   } else {
-    console.warn(`OCI_DATA_URL_${lang.toUpperCase()} is not set.`);
+    console.warn(`OCI_BUCKET_URL is not set.`);
   }
 
   // Fallback to empty default data so the admin page can still load for initial setup

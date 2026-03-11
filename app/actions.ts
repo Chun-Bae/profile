@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 export async function updateProfile(prevState: any, formData: FormData) {
   const jsonData = formData.get('profileData') as string
   const lang = (formData.get('lang') as string) || 'ko';
-  const ociUrl = lang === 'ko' ? process.env.OCI_DATA_URL_KO : process.env.OCI_DATA_URL_EN;
+  const bucketUrl = process.env.OCI_BUCKET_URL;
 
   // 1. 유효성 검사 (올바른 JSON 형태인지 확인)
   try {
@@ -15,9 +15,12 @@ export async function updateProfile(prevState: any, formData: FormData) {
   }
 
   // 2. OCI URI 환경변수 확인
-  if (!ociUrl) {
-    return { error: `OCI_DATA_URL_${lang.toUpperCase()} environment variable is not set. Cannot save to cloud.` }
+  if (!bucketUrl) {
+    return { error: 'OCI_BUCKET_URL environment variable is not set. Cannot save to cloud.' }
   }
+
+  const filename = `profile_${lang}.json`;
+  const ociUrl = bucketUrl.endsWith('/') ? `${bucketUrl}${filename}` : `${bucketUrl}/${filename}`;
 
   // 3. OCI 버킷에 저장 (미리 인증된 요청의 읽기/쓰기 URL 사용)
   try {
@@ -50,13 +53,24 @@ export async function checkPassword(password: string) {
 
 export async function uploadImage(formData: FormData) {
   const file = formData.get('file') as File;
-  const type = formData.get('type') as 'avatar' | 'banner';
+  const type = formData.get('type') as 'avatar' | 'banner' | 'generic';
   
-  const ociUrl = type === 'avatar' ? process.env.OCI_AVATAR_URL : process.env.OCI_BANNER_URL;
+  const bucketUrl = process.env.OCI_BUCKET_URL;
 
-  if (!ociUrl) {
-    return { error: `OCI_${type.toUpperCase()}_URL 환경 변수가 .env.local에 설정되어 있지 않습니다.` }
+  if (!bucketUrl) {
+    return { error: `OCI_BUCKET_URL 환경 변수가 .env.local에 설정되어 있지 않습니다.` }
   }
+
+  let filename = file.name;
+  if (type === 'avatar') {
+    filename = 'profile_img.jpeg';
+  } else if (type === 'banner') {
+    filename = 'profile_img_banner.jpg';
+  } else {
+    filename = (formData.get('filename') as string) || encodeURIComponent(file.name.replace(/\s+/g, '_'));
+  }
+
+  const ociUrl = bucketUrl.endsWith('/') ? `${bucketUrl}${filename}` : `${bucketUrl}/${filename}`;
 
   try {
     const arrayBuffer = await file.arrayBuffer();
@@ -74,7 +88,7 @@ export async function uploadImage(formData: FormData) {
     }
     
     revalidatePath('/');
-    return { success: true }
+    return { success: true, url: ociUrl }
   } catch (error: any) {
     return { error: `업로드 오류: ${error.message}` }
   }
