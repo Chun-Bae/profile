@@ -61,6 +61,7 @@ export interface Education {
   date: string;
   gpa?: string;
   notes?: string;
+  logoUrl?: string;
 }
 
 export interface ProfileData {

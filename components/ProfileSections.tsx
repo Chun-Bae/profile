@@ -198,11 +198,16 @@ export function EducationSection({ items }: { items: ProfileData["educations"] }
   return (
     <ul className="space-y-4 list-none p-0 m-0">
       {items.map((item, i) => (
-        <li key={i} className="flex gap-4 items-start border border-[var(--border)] rounded-xl p-5 bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] hover:shadow-md transition-shadow">
-          <div className="flex-1">
+        <li key={i} className="flex gap-4 sm:gap-6 items-start border border-[var(--border)] rounded-xl p-5 bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] hover:shadow-md transition-shadow">
+          {item.logoUrl && (
+            <div className="flex-none w-12 h-12 sm:w-16 sm:h-16 rounded-md overflow-hidden bg-white shrink-0 flex items-center justify-center p-1 border border-[var(--border)]">
+              <img src={item.logoUrl} alt={`${item.schoolName} logo`} className="max-w-full max-h-full object-contain" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2 border-b border-[var(--border)] pb-3">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">{item.schoolName}</h3>
-              <div className="flex items-center gap-3 text-sm">
+              <h3 className="text-lg font-bold text-[var(--foreground)] truncate">{item.schoolName}</h3>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm shrink-0">
                 <span className={`font-semibold ${item.status === '재학' || item.status === 'Attending' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{item.status}</span>
                 <time className="text-[var(--text-muted)] font-medium bg-zinc-100 dark:bg-zinc-800/50 px-2 py-1 rounded-md">{item.date}</time>
               </div>
