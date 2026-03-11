@@ -186,12 +186,26 @@ export function ListSection({ items }: { items: { title: string, subtitle: strin
 
 const getPrizeColor = (prize: string) => {
   const lowerPrize = prize.toLowerCase();
-  if (lowerPrize.includes('대상') || lowerPrize.includes('grand')) return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800/40';
-  if (lowerPrize.includes('금상') || lowerPrize.includes('gold')) return 'bg-gradient-to-br from-yellow-100 to-amber-200 dark:from-yellow-900/60 dark:to-teal-900/20 text-amber-800 dark:text-amber-200 border-yellow-300 dark:border-yellow-700/50 shadow-sm';
-  if (lowerPrize.includes('은상') || lowerPrize.includes('silver')) return 'bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600 shadow-sm';
-  if (lowerPrize.includes('동상') || lowerPrize.includes('bronze')) return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800/40';
-  if (lowerPrize.includes('최우수') || lowerPrize.includes('우수상') || lowerPrize.includes('excellence')) return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/40';
-  if (lowerPrize.includes('장려') || lowerPrize.includes('참가') || lowerPrize.includes('participant')) return 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 border border-[var(--border)]';
+  
+  // 대상 (Grand) -> Rainbow gradient
+  if (lowerPrize.includes('대상') || lowerPrize.includes('grand')) 
+    return 'bg-[linear-gradient(135deg,#ef4444,#eab308,#22c55e,#3b82f6,#a855f7)] text-white border-transparent shadow-sm';
+  
+  // 금상 (Gold) = 최우수상 (Excellence)
+  if (lowerPrize.includes('금상') || lowerPrize.includes('gold') || lowerPrize.includes('최우수') || lowerPrize.includes('excellence')) 
+    return 'bg-gradient-to-br from-yellow-100 to-amber-200 dark:from-yellow-900/60 dark:to-teal-900/20 text-amber-800 dark:text-amber-200 border-yellow-300 dark:border-yellow-700/50 shadow-sm';
+  
+  // 은상 (Silver) = 우수상
+  if (lowerPrize.includes('은상') || lowerPrize.includes('silver') || lowerPrize.includes('우수')) 
+    return 'bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600 shadow-sm';
+  
+  // 동상 (Bronze) = 장려상
+  if (lowerPrize.includes('동상') || lowerPrize.includes('bronze') || lowerPrize.includes('장려')) 
+    return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800/40';
+  
+  // 참가상 (Participant)
+  if (lowerPrize.includes('참가') || lowerPrize.includes('participant')) 
+    return 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 border border-[var(--border)]';
   
   // Default fallback
   return 'bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 border border-[var(--border)]';
