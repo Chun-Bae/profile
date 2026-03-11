@@ -191,9 +191,16 @@ export function AwardSection({ items }: { items: ProfileData["awards"] }) {
       {items.map((item, i) => (
         <li key={i} className="flex gap-4 items-start">
           <div className="mt-2 flex-none w-2 h-2 rounded-full border-[1.5px] border-[var(--text-muted)] bg-transparent" />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-1">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">{item.title}</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-lg font-bold text-[var(--foreground)] truncate">{item.title}</h3>
+                {item.prize && (
+                  <span className="px-2 py-0.5 text-xs font-bold leading-none bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40 rounded-md">
+                    {item.prize}
+                  </span>
+                )}
+              </div>
               <time className="text-sm text-[var(--text-muted)] whitespace-nowrap">{item.date}</time>
             </div>
             {item.organization && <p className="text-[var(--foreground)] font-medium">{item.organization}</p>}

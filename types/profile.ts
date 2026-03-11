@@ -55,6 +55,7 @@ export interface Award {
   date: string;
   organization?: string;
   description?: string;
+  prize?: string;
 }
 
 export interface Education {
