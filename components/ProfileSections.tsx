@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from "react";
 import { ProfileData } from "@/types/profile";
 
 export function IntroSection({ intro }: { intro: ProfileData["intro"] }) {
@@ -103,60 +106,90 @@ export function TechStackSection({ stack }: { stack: ProfileData["techStack"] })
 }
 
 export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void, lang?: 'ko' | 'en' }) {
+  // By default, expand the first project, collapse the rest (or expand all, but first one expanded is cleaner for 5+ parts)
+  const [expandedIndices, setExpandedIndices] = useState<number[]>([0]);
+
+  const toggleExpand = (index: number) => {
+    setExpandedIndices(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
+
   return (
     <div className="space-y-8">
-      {items.map((item, i) => (
-        <article key={i} className="flex flex-col h-full border border-[var(--border)] rounded-xl p-6 bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start mb-4 gap-4">
-            <h3 className="text-xl font-bold text-[var(--foreground)] leading-tight">
-              {item.title}
-            </h3>
-            <time className="text-sm font-medium text-[var(--text-muted)] whitespace-nowrap bg-zinc-100 dark:bg-zinc-800/50 border border-[var(--border)] px-2 py-1 rounded-md">
-              {item.date}
-            </time>
-          </div>
-          
-          <p className="text-[var(--text-muted)] leading-relaxed mb-6 flex-grow">
-            {item.description}
-          </p>
-          
-          <div className="mt-auto space-y-5">
-            <div className="flex flex-wrap gap-2">
-              {item.technologies.map((tech, j) => (
-                <span key={j} className="px-2 py-1 text-xs font-medium bg-zinc-100 dark:bg-zinc-800/50 text-[var(--foreground)] rounded-md border border-[var(--border)]">
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4 text-sm font-medium pt-4 border-t border-[var(--border)]">
-              {item.link && (
-                <a href={item.link} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
-                  Live Demo ↗
-                </a>
-              )}
-              {item.github && (
-                <a href={item.github} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
-                  Source Code ↗
-                </a>
-              )}
-              {item.sourceLinks?.map((link, k) => (
-                <a key={k} href={link.url} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
-                  {link.name} ↗
-                </a>
-              ))}
-              {item.mdFile && onDetail && (
-                <button
-                  onClick={() => onDetail(item)}
-                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity"
+      {items.map((item, i) => {
+        const isExpanded = expandedIndices.includes(i);
+        return (
+          <article key={i} className="flex flex-col h-full border border-[var(--border)] rounded-xl bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] hover:shadow-md transition-all overflow-hidden">
+            {/* Header / Toggle Button */}
+            <button 
+              onClick={() => toggleExpand(i)}
+              className="flex justify-between items-center w-full text-left p-6 gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors focus:outline-none"
+            >
+              <h3 className="text-xl font-bold text-[var(--foreground)] leading-tight flex flex-1 items-center gap-3">
+                <svg
+                  className={`w-5 h-5 text-[var(--text-muted)] transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                 >
-                  {lang === 'ko' ? '자세히 보기 →' : 'View Details →'}
-                </button>
-              )}
-            </div>
-          </div>
-        </article>
-      ))}
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+                {item.title}
+              </h3>
+              <time className="text-sm font-medium text-[var(--text-muted)] whitespace-nowrap bg-zinc-100 dark:bg-zinc-800/50 border border-[var(--border)] px-2 py-1 rounded-md">
+                {item.date}
+              </time>
+            </button>
+            
+            {/* Expandable Content */}
+            {isExpanded && (
+              <div className="px-6 pb-6 pt-2 border-t border-[var(--border)]">
+                <p className="text-[var(--text-muted)] leading-relaxed mb-6 flex-grow whitespace-pre-wrap">
+                  {item.description}
+                </p>
+                
+                <div className="mt-auto space-y-5">
+                  <div className="flex flex-wrap gap-2">
+                    {item.technologies.map((tech, j) => (
+                      <span key={j} className="px-2 py-1 text-xs font-medium bg-zinc-100 dark:bg-zinc-800/50 text-[var(--foreground)] rounded-md border border-[var(--border)]">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-4 text-sm font-medium pt-4 border-t border-[var(--border)]">
+                    {item.link && (
+                      <a href={item.link} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
+                        Live Demo ↗
+                      </a>
+                    )}
+                    {item.github && (
+                      <a href={item.github} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
+                        Source Code ↗
+                      </a>
+                    )}
+                    {item.sourceLinks?.map((link, k) => (
+                      <a key={k} href={link.url} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
+                        {link.name} ↗
+                      </a>
+                    ))}
+                    {item.mdFile && onDetail && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDetail(item);
+                        }}
+                        className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity"
+                      >
+                        {lang === 'ko' ? '자세히 보기 →' : 'View Details →'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </article>
+        );
+      })}
     </div>
   );
 }
