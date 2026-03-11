@@ -33,6 +33,28 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const [passwordInput, setPasswordInput] = useState('')
   const [passwordError, setPasswordError] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
+  
+  const [activeSection, setActiveSection] = useState<string>('intro')
+
+  useEffect(() => {
+    if (!mounted) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -60% 0px" }
+    );
+    
+    // Select all our profile sections
+    const sections = document.querySelectorAll('main > div[id]');
+    sections.forEach((section) => observer.observe(section));
+    
+    return () => observer.disconnect();
+  }, [mounted, profile]);
 
   const handleToggleClick = () => {
     if (isGlobalEditMode) {
@@ -283,7 +305,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               <a 
                 key={item.id} 
                 href={`#${item.id}`} 
-                className="hover:text-[var(--foreground)] hover:-translate-x-1 transition-all text-right"
+                className={`transition-all text-right ${activeSection === item.id ? 'text-[var(--foreground)] -translate-x-1 font-bold' : 'hover:text-[var(--foreground)] hover:-translate-x-1'}`}
               >
                 {currentLang === 'ko' ? item.ko : item.en}
               </a>
