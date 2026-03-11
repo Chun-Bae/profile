@@ -628,7 +628,6 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </footer>
         </main>
       </div>
-    </div>
 
     <ProjectDetailPanel
       item={selectedProject}
