@@ -63,6 +63,7 @@ export interface Education {
   schoolName: string;
   status: string;
   date: string;
+  major?: string;
   gpa?: string;
   notes?: string;
   logoUrl?: string;

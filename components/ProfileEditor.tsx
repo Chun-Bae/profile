@@ -613,7 +613,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                    <EditButton onClick={() => startEdit('educations', profile.educations || [])} />
                  </h2>
                  {profile.educations && profile.educations.length > 0 ? (
-                   <EducationSection items={profile.educations} />
+                   <EducationSection items={profile.educations} lang={currentLang} />
                  ) : (
                    <p className="text-sm text-[var(--text-muted)] italic">No education added yet.</p>
                  )}
