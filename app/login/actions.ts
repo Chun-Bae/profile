@@ -5,9 +5,9 @@ import { redirect } from 'next/navigation'
 
 export async function authenticate(prevState: any, formData: FormData) {
   const password = formData.get('password')
-  
-  const sitePassword = process.env.SITE_PASSWORD || '1234'
-  
+
+  const sitePassword = process.env.SITE_ACCESS_PASSWORD
+
   if (password === sitePassword) {
     const cookieStore = await cookies()
     cookieStore.set('site_auth', 'authenticated', {
@@ -16,9 +16,9 @@ export async function authenticate(prevState: any, formData: FormData) {
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/',
     })
-    
+
     redirect('/')
   }
-  
+
   return { error: 'Invalid password' }
 }
