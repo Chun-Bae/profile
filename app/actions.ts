@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 export async function updateProfile(prevState: any, formData: FormData) {
   const jsonData = formData.get('profileData') as string
   const lang = (formData.get('lang') as string) || 'ko';
-  const ociUrl = lang === 'ko' ? process.env.OCI_DATA_URL_KO || process.env.OCI_DATA_URL : process.env.OCI_DATA_URL_EN;
+  const ociUrl = lang === 'ko' ? process.env.OCI_DATA_URL_KO : process.env.OCI_DATA_URL_EN;
 
   // 1. 유효성 검사 (올바른 JSON 형태인지 확인)
   try {

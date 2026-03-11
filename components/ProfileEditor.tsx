@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateProfile, checkPassword, uploadImage } from '@/app/actions'
 import { ProfileData } from '@/types/profile'
 import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection } from './ProfileSections'
+import { useTheme } from 'next-themes'
 
 export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { initialProfileKO: ProfileData, initialProfileEN: ProfileData }) {
   const router = useRouter()
@@ -12,6 +13,13 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const [profileKO, setProfileKO] = useState<ProfileData>(initialProfileKO)
   const [profileEN, setProfileEN] = useState<ProfileData>(initialProfileEN)
   
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const profile = currentLang === 'ko' ? profileKO : profileEN
   const setProfile = currentLang === 'ko' ? setProfileKO : setProfileEN
 
@@ -179,8 +187,23 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         )}
       </button>
 
-      {/* Language Toggle */}
-      <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-20 flex bg-[var(--background)] border border-[var(--border)] rounded-lg overflow-hidden shadow-sm">
+      {/* Top Controls: Theme & Language */}
+      <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-20 flex items-center gap-3">
+        {/* Theme Toggle */}
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="p-2 rounded-lg bg-[var(--background)] border border-[var(--border)] shadow-sm text-[var(--text-muted)] hover:text-[var(--foreground)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          title="Toggle Dark Mode"
+        >
+          {mounted && theme === 'dark' ? (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          ) : mounted ? (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          ) : <div className="w-5 h-5" />}
+        </button>
+
+        {/* Language Toggle */}
+        <div className="flex bg-[var(--background)] border border-[var(--border)] rounded-lg overflow-hidden shadow-sm">
         <button 
           onClick={() => { setCurrentLang('ko'); setEditingSection(null); }}
           className={`px-4 py-2 text-sm font-bold transition-colors ${currentLang === 'ko' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--text-muted)] hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}

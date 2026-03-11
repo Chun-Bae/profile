@@ -16,7 +16,7 @@ const defaultProfile: ProfileData = {
 };
 
 export async function fetchProfile(lang: 'ko' | 'en' = 'ko'): Promise<ProfileData> {
-  const ociUrl = lang === 'ko' ? process.env.OCI_DATA_URL_KO || process.env.OCI_DATA_URL : process.env.OCI_DATA_URL_EN;
+  const ociUrl = lang === 'ko' ? process.env.OCI_DATA_URL_KO : process.env.OCI_DATA_URL_EN;
 
   if (ociUrl) {
     try {
