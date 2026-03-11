@@ -16,7 +16,7 @@ const defaultProfile: ProfileData = {
 };
 
 export async function fetchProfile(lang: 'ko' | 'en' = 'ko'): Promise<ProfileData> {
-  const bucketUrl = process.env.OCI_BUCKET_URL;
+  const bucketUrl = process.env.OCI_BUCKET_READ_URL || process.env.OCI_BUCKET_URL;
 
   if (bucketUrl) {
     const filename = `profile_${lang}.json`;
@@ -35,7 +35,7 @@ export async function fetchProfile(lang: 'ko' | 'en' = 'ko'): Promise<ProfileDat
       console.error(`Error fetching ${lang} profile from OCI URL:`, error);
     }
   } else {
-    console.warn(`OCI_BUCKET_URL is not set.`);
+    console.warn(`OCI_BUCKET_READ_URL is not set.`);
   }
 
   // Fallback to empty default data so the admin page can still load for initial setup
