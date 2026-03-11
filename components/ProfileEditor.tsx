@@ -283,7 +283,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               <a 
                 key={item.id} 
                 href={`#${item.id}`} 
-                className="hover:text-[var(--foreground)] hover:-translate-x-1 transition-all"
+                className="hover:text-[var(--foreground)] hover:-translate-x-1 transition-all text-right"
               >
                 {currentLang === 'ko' ? item.ko : item.en}
               </a>
