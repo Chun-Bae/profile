@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateProfile, checkPassword, uploadImage } from '@/app/actions'
 import { ProfileData } from '@/types/profile'
-import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection } from './ProfileSections'
+import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection, EducationSection } from './ProfileSections'
 import { useTheme } from 'next-themes'
 
 export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { initialProfileKO: ProfileData, initialProfileEN: ProfileData }) {
@@ -33,6 +33,28 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const [passwordInput, setPasswordInput] = useState('')
   const [passwordError, setPasswordError] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
+  
+  const [activeSection, setActiveSection] = useState<string>('intro')
+
+  useEffect(() => {
+    if (!mounted) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -60% 0px" }
+    );
+    
+    // Select all our profile sections
+    const sections = document.querySelectorAll('main > div[id]');
+    sections.forEach((section) => observer.observe(section));
+    
+    return () => observer.disconnect();
+  }, [mounted, profile]);
 
   const handleToggleClick = () => {
     if (isGlobalEditMode) {
@@ -61,28 +83,49 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isUploadingBanner, setIsUploadingBanner] = useState(false)
+  const [isUploadingAsset, setIsUploadingAsset] = useState(false)
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner') => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner' | 'generic') => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
     
     if (type === 'avatar') setIsUploadingAvatar(true);
-    else setIsUploadingBanner(true);
+    else if (type === 'banner') setIsUploadingBanner(true);
+    else setIsUploadingAsset(true);
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('type', type);
 
+    // Maintain specific filenames for legacy items, use pure safe filenames for generic
+    let filename = file.name;
+    if (type === 'avatar') filename = 'profile_img.jpeg';
+    else if (type === 'banner') filename = 'profile_img_banner.jpg';
+    
+    // URL-safe filename
+    const safeFilename = encodeURIComponent(filename.replace(/\s+/g, '_'));
+    formData.append('filename', safeFilename);
+
     const res = await uploadImage(formData);
 
     if (type === 'avatar') setIsUploadingAvatar(false);
-    else setIsUploadingBanner(false);
+    else if (type === 'banner') setIsUploadingBanner(false);
+    else setIsUploadingAsset(false);
 
     if (res?.error) {
       alert(res.error);
     } else {
-      const currentUrl = type === 'avatar' ? introData.avatarUrl : introData.bannerUrl;
-      const baseUrl = currentUrl ? currentUrl.split('?')[0] : '';
+      if (type === 'generic') {
+        const urlToCopy = res.url || '';
+        navigator.clipboard.writeText(urlToCopy).then(() => {
+          alert(`업로드 완료! 이미지 링크가 클립보드에 복사되었습니다.\n\n${urlToCopy}`);
+        }).catch(() => {
+          prompt('업로드 완료! 링크를 복사해주세요:', urlToCopy);
+        });
+        return;
+      }
+
+      const baseUrl = res.url || '';
       if (baseUrl) {
          const newUrl = baseUrl + '?t=' + Date.now();
          const updatedProfile = {
@@ -171,7 +214,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   )
 
   const formattedCertifications = profile.certifications?.map(c => ({ title: c.name, subtitle: c.issuer, date: c.date })) || []
-  const formattedPatents = profile.patents?.map(p => ({ title: p.title, subtitle: p.number, date: p.date, link: p.link })) || []
+  const formattedPatents = profile.patents?.map(p => ({ title: p.title, subtitle: p.number, date: p.date, link: p.link, category: p.category, status: p.status })) || []
   const formattedEnglishScores = profile.englishScores?.map(e => ({ title: e.testName, subtitle: e.score, date: e.date })) || []
 
   return (
@@ -193,6 +236,18 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
         )}
       </button>
+
+      {/* Generic Asset Uploader */}
+      {isGlobalEditMode && (
+        <label className="fixed bottom-20 right-6 p-3 rounded-full shadow-xl transition-all z-20 hover:scale-105 active:scale-95 bg-blue-500 text-white border border-blue-400 cursor-pointer" title="Upload Generic Asset (e.g. Patent Image)">
+          {isUploadingAsset ? (
+            <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          )}
+          <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleUpload(e, 'generic')} />
+        </label>
+      )}
 
       {/* Top Controls: Theme & Language */}
       <div className="fixed top-4 sm:top-8 right-4 sm:right-8 z-50 flex items-center gap-3">
@@ -276,13 +331,14 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
               { id: 'awards', ko: '수상/대회', en: 'Awards' },
               { id: 'certifications', ko: '자격증', en: 'Certifications' },
-              { id: 'patents', ko: '특허', en: 'Patents' },
+              { id: 'patents', ko: '특허 및 등록증', en: 'Patents & Registrations' },
               { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
+              { id: 'educations', ko: '학력', en: 'Education' },
             ].map((item) => (
               <a 
                 key={item.id} 
                 href={`#${item.id}`} 
-                className="hover:text-[var(--foreground)] hover:-translate-x-1 transition-all"
+                className={`transition-all text-right ${activeSection === item.id ? 'text-[var(--foreground)] -translate-x-1 font-bold' : 'hover:text-[var(--foreground)] hover:-translate-x-1'}`}
               >
                 {currentLang === 'ko' ? item.ko : item.en}
               </a>
@@ -349,7 +405,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (profile.techStack?.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  Technical Skills
+                  {currentLang === 'ko' ? '기술 스택' : 'Technical Skills'}
                   <EditButton onClick={() => startEdit('techStack', profile.techStack || [])} />
                 </h2>
                 {profile.techStack?.length > 0 ? (
@@ -374,7 +430,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (profile.portfolio?.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  Projects
+                  {currentLang === 'ko' ? '프로젝트' : 'Projects'}
                   <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
                 </h2>
                 {profile.portfolio?.length > 0 ? (
@@ -399,7 +455,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             ((profile.awards && profile.awards.length > 0) || isGlobalEditMode) && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  Awards & Competitions
+                  {currentLang === 'ko' ? '수상 및 대회' : 'Awards & Competitions'}
                   <EditButton onClick={() => startEdit('awards', profile.awards || [])} />
                 </h2>
                 {profile.awards && profile.awards.length > 0 ? (
@@ -423,7 +479,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (formattedCertifications.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   Certifications
+                   {currentLang === 'ko' ? '자격증' : 'Certifications'}
                    <EditButton onClick={() => startEdit('certifications', profile.certifications || [])} />
                  </h2>
                  {formattedCertifications.length > 0 ? (
@@ -448,7 +504,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (formattedPatents.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   Patents
+                   {currentLang === 'ko' ? '특허 및 등록증' : 'Patents & Registrations'}
                    <EditButton onClick={() => startEdit('patents', profile.patents || [])} />
                  </h2>
                  {formattedPatents.length > 0 ? (
@@ -473,13 +529,38 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (formattedEnglishScores.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   Language Scores
+                   {currentLang === 'ko' ? '어학 점수' : 'Language Scores'}
                    <EditButton onClick={() => startEdit('englishScores', profile.englishScores || [])} />
                  </h2>
                  {formattedEnglishScores.length > 0 ? (
                    <ListSection items={formattedEnglishScores} />
                  ) : (
                    <p className="text-sm text-[var(--text-muted)] italic">No language scores added yet.</p>
+                 )}
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Education */}
+        <div className="relative group mt-16 scroll-mt-24" id="educations">
+          {editingSection === 'educations' ? (
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+               <h3 className="text-lg font-bold mb-2">Edit Education (JSON array)</h3>
+               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('educations')} />
+            </div>
+          ) : (
+            ((profile.educations && profile.educations.length > 0) || isGlobalEditMode) && (
+              <div className="space-y-8">
+                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                   {currentLang === 'ko' ? '학력' : 'Education'}
+                   <EditButton onClick={() => startEdit('educations', profile.educations || [])} />
+                 </h2>
+                 {profile.educations && profile.educations.length > 0 ? (
+                   <EducationSection items={profile.educations} />
+                 ) : (
+                   <p className="text-sm text-[var(--text-muted)] italic">No education added yet.</p>
                  )}
               </div>
             )

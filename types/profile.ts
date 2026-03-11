@@ -40,6 +40,8 @@ export interface Patent {
   number: string;
   date: string;
   link?: string;
+  category?: string;
+  status?: string;
 }
 
 export interface EnglishScore {
@@ -53,6 +55,16 @@ export interface Award {
   date: string;
   organization?: string;
   description?: string;
+  prize?: string;
+}
+
+export interface Education {
+  schoolName: string;
+  status: string;
+  date: string;
+  gpa?: string;
+  notes?: string;
+  logoUrl?: string;
 }
 
 export interface ProfileData {
@@ -63,4 +75,5 @@ export interface ProfileData {
   patents: Patent[];
   englishScores: EnglishScore[];
   awards?: Award[];
+  educations?: Education[];
 }

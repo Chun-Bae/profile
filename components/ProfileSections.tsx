@@ -148,21 +148,33 @@ export function PortfolioSection({ items }: { items: ProfileData["portfolio"] })
   );
 }
 
-export function ListSection({ items }: { items: { title: string, subtitle: string, date: string, link?: string }[] }) {
+export function ListSection({ items }: { items: { title: string, subtitle: string, date: string, link?: string, category?: string, status?: string }[] }) {
   return (
     <ul className="space-y-6 list-none p-0 m-0">
       {items.map((item, i) => (
         <li key={i} className="border-l-2 border-[var(--border)] pl-4 py-1">
            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-1">
-             <h3 className="text-lg font-bold text-[var(--foreground)]">
-                {item.link ? (
-                  <a href={item.link} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] hover:underline">
-                    {item.title} ↗
-                  </a>
-                ) : (
-                  item.title
-                )}
-             </h3>
+             <div className="flex flex-wrap items-center gap-2">
+               <h3 className="text-lg font-bold text-[var(--foreground)]">
+                  {item.link ? (
+                    <a href={item.link} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] hover:underline">
+                      {item.title} ↗
+                    </a>
+                  ) : (
+                    item.title
+                  )}
+               </h3>
+               {item.category && (
+                 <span className="px-2 py-0.5 text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-[var(--text-muted)] border border-[var(--border)] rounded-md">
+                   {item.category}
+                 </span>
+               )}
+               {item.status && (
+                 <span className={`px-2 py-0.5 text-xs font-semibold border rounded-md whitespace-nowrap ${item.status === '등록' || item.status.includes('Registered') ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50' : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/50'}`}>
+                   {item.status}
+                 </span>
+               )}
+             </div>
              <time className="text-sm text-[var(--text-muted)] whitespace-nowrap">{item.date}</time>
            </div>
            <p className="text-[var(--foreground)]">{item.subtitle}</p>
@@ -172,6 +184,33 @@ export function ListSection({ items }: { items: { title: string, subtitle: strin
   );
 }
 
+const getPrizeColor = (prize: string) => {
+  const lowerPrize = prize.toLowerCase();
+  
+  // 대상 (Grand) -> Deep Gold
+  if (lowerPrize.includes('대상') || lowerPrize.includes('grand')) 
+    return 'bg-gradient-to-br from-amber-300 to-amber-500 dark:from-amber-700 dark:to-amber-900 text-amber-950 dark:text-amber-50 border-amber-500 dark:border-amber-600 shadow-sm';
+  
+  // 금상 (Gold) = 최우수상 (Excellence)
+  if (lowerPrize.includes('금상') || lowerPrize.includes('gold') || lowerPrize.includes('최우수') || lowerPrize.includes('excellence')) 
+    return 'bg-gradient-to-br from-yellow-100 to-amber-200 dark:from-yellow-900/60 dark:to-teal-900/20 text-amber-800 dark:text-amber-200 border-yellow-300 dark:border-yellow-700/50 shadow-sm';
+  
+  // 은상 (Silver) = 우수상
+  if (lowerPrize.includes('은상') || lowerPrize.includes('silver') || lowerPrize.includes('우수')) 
+    return 'bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600 shadow-sm';
+  
+  // 동상 (Bronze) = 장려상
+  if (lowerPrize.includes('동상') || lowerPrize.includes('bronze') || lowerPrize.includes('장려')) 
+    return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400 border-orange-200 dark:border-orange-800/40';
+  
+  // 참가상 (Participant)
+  if (lowerPrize.includes('참가') || lowerPrize.includes('participant')) 
+    return 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 border border-[var(--border)]';
+  
+  // Default fallback
+  return 'bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 border border-[var(--border)]';
+};
+
 export function AwardSection({ items }: { items: ProfileData["awards"] }) {
   if (!items || items.length === 0) return null;
   return (
@@ -179,13 +218,48 @@ export function AwardSection({ items }: { items: ProfileData["awards"] }) {
       {items.map((item, i) => (
         <li key={i} className="flex gap-4 items-start">
           <div className="mt-2 flex-none w-2 h-2 rounded-full border-[1.5px] border-[var(--text-muted)] bg-transparent" />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-1">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">{item.title}</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-lg font-bold text-[var(--foreground)] truncate">{item.title}</h3>
+                {item.prize && (
+                  <span className={`px-2 py-0.5 text-xs font-bold leading-none border rounded-md whitespace-nowrap ${getPrizeColor(item.prize)}`}>
+                    {item.prize}
+                  </span>
+                )}
+              </div>
               <time className="text-sm text-[var(--text-muted)] whitespace-nowrap">{item.date}</time>
             </div>
             {item.organization && <p className="text-[var(--foreground)] font-medium">{item.organization}</p>}
             {item.description && <p className="text-sm text-[var(--text-muted)] mt-1">{item.description}</p>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function EducationSection({ items }: { items: ProfileData["educations"] }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <ul className="space-y-4 list-none p-0 m-0">
+      {items.map((item, i) => (
+        <li key={i} className="flex gap-4 sm:gap-6 items-start border border-[var(--border)] rounded-xl p-5 bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] hover:shadow-md transition-shadow">
+          {item.logoUrl && (
+            <div className="flex-none w-12 h-12 sm:w-16 sm:h-16 rounded-md overflow-hidden bg-white shrink-0 flex items-center justify-center p-1 border border-[var(--border)]">
+              <img src={item.logoUrl} alt={`${item.schoolName} logo`} className="max-w-full max-h-full object-contain" />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2 border-b border-[var(--border)] pb-3">
+              <h3 className="text-lg font-bold text-[var(--foreground)] truncate">{item.schoolName}</h3>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm shrink-0">
+                <span className={`font-semibold ${item.status === '재학' || item.status === 'Attending' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{item.status}</span>
+                <time className="text-[var(--text-muted)] font-medium bg-zinc-100 dark:bg-zinc-800/50 px-2 py-1 rounded-md">{item.date}</time>
+              </div>
+            </div>
+            {item.gpa && <p className="text-sm text-[var(--foreground)] mt-3 flex items-center gap-2"><span className="font-bold text-[var(--text-muted)]">GPA</span> {item.gpa}</p>}
+            {item.notes && <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">{item.notes}</p>}
           </div>
         </li>
       ))}
