@@ -219,7 +219,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
     </div>
   )
 
-  const formattedCertifications = profile.certifications?.map(c => ({ title: c.name, subtitle: c.issuer, date: c.date })) || []
+  const formattedCertifications = profile.certifications?.map(c => ({ title: c.name, subtitle: c.issuer, date: c.date, link: c.link, idNumber: c.idNumber, expiryDate: c.expiryDate })) || []
   const formattedPatents = profile.patents?.map(p => ({ title: p.title, subtitle: p.number, date: p.date, link: p.link, category: p.category, status: p.status })) || []
   const formattedEnglishScores = profile.englishScores?.map(e => ({ title: e.testName, subtitle: e.score, date: e.date })) || []
 
@@ -575,7 +575,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                    <EditButton onClick={() => startEdit('certifications', profile.certifications || [])} />
                  </h2>
                  {formattedCertifications.length > 0 ? (
-                   <ListSection items={formattedCertifications} />
+                   <ListSection items={formattedCertifications} lang={currentLang} />
                  ) : (
                    <p className="text-sm text-[var(--text-muted)] italic">No certifications added yet.</p>
                  )}

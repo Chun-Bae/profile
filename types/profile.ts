@@ -36,6 +36,9 @@ export interface Certification {
   name: string;
   issuer: string;
   date: string;
+  idNumber?: string;
+  expiryDate?: string;
+  link?: string;
 }
 
 export interface Patent {
