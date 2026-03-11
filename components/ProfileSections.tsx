@@ -140,6 +140,11 @@ export function PortfolioSection({ items, onDetail, lang = 'ko' }: { items: Prof
                   Source Code ↗
                 </a>
               )}
+              {item.sourceLinks?.map((link, k) => (
+                <a key={k} href={link.url} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
+                  {link.name} ↗
+                </a>
+              ))}
               {item.mdFile && onDetail && (
                 <button
                   onClick={() => onDetail(item)}

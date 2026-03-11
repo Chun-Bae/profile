@@ -282,8 +282,8 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
                   </span>
                 ))}
               </div>
-              {(item.link || item.github) && (
-                <div className="flex gap-3">
+              {(item.link || item.github || (item.sourceLinks && item.sourceLinks.length > 0)) && (
+                <div className="flex gap-3 flex-wrap">
                   {item.link && (
                     <a href={item.link} target="_blank" rel="noreferrer"
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity text-xs font-bold">
@@ -296,6 +296,12 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
                       Source Code ↗
                     </a>
                   )}
+                  {item.sourceLinks?.map((link, k) => (
+                    <a key={k} href={link.url} target="_blank" rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--foreground)] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-xs font-bold">
+                      {link.name} ↗
+                    </a>
+                  ))}
                 </div>
               )}
               <hr className="border-[var(--border)]" />
