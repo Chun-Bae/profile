@@ -171,3 +171,24 @@ export function ListSection({ items }: { items: { title: string, subtitle: strin
     </ul>
   );
 }
+
+export function AwardSection({ items }: { items: ProfileData["awards"] }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <ul className="space-y-6 list-none p-0 m-0">
+      {items.map((item, i) => (
+        <li key={i} className="flex gap-4 items-start">
+          <div className="mt-2 flex-none w-2 h-2 rounded-full border-[1.5px] border-[var(--text-muted)] bg-transparent" />
+          <div className="flex-1">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-1">
+              <h3 className="text-lg font-bold text-[var(--foreground)]">{item.title}</h3>
+              <time className="text-sm text-[var(--text-muted)] whitespace-nowrap">{item.date}</time>
+            </div>
+            {item.organization && <p className="text-[var(--foreground)] font-medium">{item.organization}</p>}
+            {item.description && <p className="text-sm text-[var(--text-muted)] mt-1">{item.description}</p>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}

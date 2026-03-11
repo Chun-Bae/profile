@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache'
 
 export async function updateProfile(prevState: any, formData: FormData) {
   const jsonData = formData.get('profileData') as string
-  const ociUrl = process.env.OCI_DATA_URL
+  const lang = (formData.get('lang') as string) || 'ko';
+  const ociUrl = lang === 'ko' ? process.env.OCI_DATA_URL_KO || process.env.OCI_DATA_URL : process.env.OCI_DATA_URL_EN;
 
   // 1. 유효성 검사 (올바른 JSON 형태인지 확인)
   try {
@@ -15,7 +16,7 @@ export async function updateProfile(prevState: any, formData: FormData) {
 
   // 2. OCI URI 환경변수 확인
   if (!ociUrl) {
-    return { error: 'OCI_DATA_URL environment variable is not set. Cannot save to cloud.' }
+    return { error: `OCI_DATA_URL_${lang.toUpperCase()} environment variable is not set. Cannot save to cloud.` }
   }
 
   // 3. OCI 버킷에 저장 (미리 인증된 요청의 읽기/쓰기 URL 사용)

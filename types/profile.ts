@@ -48,6 +48,13 @@ export interface EnglishScore {
   date: string;
 }
 
+export interface Award {
+  title: string;
+  date: string;
+  organization?: string;
+  description?: string;
+}
+
 export interface ProfileData {
   intro: Intro;
   techStack: TechStackCategory[];
@@ -55,4 +62,5 @@ export interface ProfileData {
   certifications: Certification[];
   patents: Patent[];
   englishScores: EnglishScore[];
+  awards?: Award[];
 }

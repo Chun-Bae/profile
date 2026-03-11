@@ -4,15 +4,21 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateProfile, checkPassword, uploadImage } from '@/app/actions'
 import { ProfileData } from '@/types/profile'
-import { IntroSection, TechStackSection, PortfolioSection, ListSection } from './ProfileSections'
+import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection } from './ProfileSections'
 
-export default function ProfileEditor({ initialProfile }: { initialProfile: ProfileData }) {
+export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { initialProfileKO: ProfileData, initialProfileEN: ProfileData }) {
   const router = useRouter()
-  const [profile, setProfile] = useState<ProfileData>(initialProfile)
+  const [currentLang, setCurrentLang] = useState<'ko' | 'en'>('ko')
+  const [profileKO, setProfileKO] = useState<ProfileData>(initialProfileKO)
+  const [profileEN, setProfileEN] = useState<ProfileData>(initialProfileEN)
+  
+  const profile = currentLang === 'ko' ? profileKO : profileEN
+  const setProfile = currentLang === 'ko' ? setProfileKO : setProfileEN
+
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false)
   
   const [editingSection, setEditingSection] = useState<string | null>(null)
-  const [introData, setIntroData] = useState(initialProfile.intro)
+  const [introData, setIntroData] = useState(profile.intro)
   const [jsonText, setJsonText] = useState("")
   
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
@@ -77,6 +83,7 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
          };
          const saveResForm = new FormData();
          saveResForm.append('profileData', JSON.stringify(updatedProfile));
+         saveResForm.append('lang', currentLang);
          await updateProfile(null, saveResForm);
          setProfile(updatedProfile);
          setIntroData(updatedProfile.intro);
@@ -120,6 +127,7 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
     startTransition(async () => {
       const formData = new FormData()
       formData.append('profileData', JSON.stringify(newProfile))
+      formData.append('lang', currentLang)
       await updateProfile(null, formData)
       setEditingSection(null)
     })
@@ -156,7 +164,7 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
       {/* Global Edit Mode Toggle */}
       <button 
         onClick={handleToggleClick}
-        className={`fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-xl hover:scale-110 transition-all flex items-center justify-center ${
+        className={`fixed bottom-6 right-6 p-3 rounded-full shadow-xl transition-all z-20 hover:scale-105 active:scale-95 ${
           isGlobalEditMode 
             ? 'bg-amber-500 text-white border border-amber-400' 
             : 'bg-zinc-900 dark:bg-zinc-100 text-[var(--background)] border border-[var(--border)]'
@@ -170,6 +178,22 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
           <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
         )}
       </button>
+
+      {/* Language Toggle */}
+      <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-20 flex bg-[var(--background)] border border-[var(--border)] rounded-lg overflow-hidden shadow-sm">
+        <button 
+          onClick={() => { setCurrentLang('ko'); setEditingSection(null); }}
+          className={`px-4 py-2 text-sm font-bold transition-colors ${currentLang === 'ko' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--text-muted)] hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+        >
+          KR
+        </button>
+        <button 
+          onClick={() => { setCurrentLang('en'); setEditingSection(null); }}
+          className={`px-4 py-2 text-sm font-bold transition-colors ${currentLang === 'en' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--text-muted)] hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+        >
+          EN
+        </button>
+      </div>
 
       {/* Password Prompt Modal */}
       {showPasswordPrompt && (
@@ -309,6 +333,30 @@ export default function ProfileEditor({ initialProfile }: { initialProfile: Prof
           )}
         </div>
 
+        {/* Awards/Competitions */}
+        <div className="relative group mt-16">
+          {editingSection === 'awards' ? (
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+               <h3 className="text-lg font-bold mb-2">Edit Awards/Competitions (JSON array)</h3>
+               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('awards')} />
+            </div>
+          ) : (
+            ((profile.awards && profile.awards.length > 0) || isGlobalEditMode) && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                  Awards & Competitions
+                  <EditButton onClick={() => startEdit('awards', profile.awards || [])} />
+                </h2>
+                {profile.awards && profile.awards.length > 0 ? (
+                  <AwardSection items={profile.awards} />
+                ) : (
+                  <p className="text-sm text-[var(--text-muted)] italic">No awards or competitions added yet.</p>
+                )}
+              </div>
+            )
+          )}
+        </div>
         {/* Certifications */}
         <div className="relative group mt-16">
           {editingSection === 'certifications' ? (
