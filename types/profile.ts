@@ -27,6 +27,7 @@ export interface PortfolioItem {
   github?: string;
   sourceLinks?: { name: string; url: string }[];
   technologies: string[];
+  badges?: string[];
   date: string;
   mdFile?: string;
 }
@@ -35,6 +36,9 @@ export interface Certification {
   name: string;
   issuer: string;
   date: string;
+  idNumber?: string;
+  expiryDate?: string;
+  link?: string;
 }
 
 export interface Patent {
@@ -58,6 +62,7 @@ export interface Award {
   organization?: string;
   description?: string;
   prize?: string;
+  link?: string;
 }
 
 export interface Education {
@@ -66,6 +71,7 @@ export interface Education {
   date: string;
   major?: string;
   gpa?: string;
+  gpaLink?: string;
   notes?: string;
   logoUrl?: string;
 }
