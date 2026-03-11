@@ -148,7 +148,7 @@ export function PortfolioSection({ items }: { items: ProfileData["portfolio"] })
   );
 }
 
-export function ListSection({ items }: { items: { title: string, subtitle: string, date: string, link?: string, category?: string }[] }) {
+export function ListSection({ items }: { items: { title: string, subtitle: string, date: string, link?: string, category?: string, status?: string }[] }) {
   return (
     <ul className="space-y-6 list-none p-0 m-0">
       {items.map((item, i) => (
@@ -167,6 +167,11 @@ export function ListSection({ items }: { items: { title: string, subtitle: strin
                {item.category && (
                  <span className="px-2 py-0.5 text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-[var(--text-muted)] border border-[var(--border)] rounded-md">
                    {item.category}
+                 </span>
+               )}
+               {item.status && (
+                 <span className={`px-2 py-0.5 text-xs font-semibold border rounded-md whitespace-nowrap ${item.status === '등록' || item.status.includes('Registered') ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50' : 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/50'}`}>
+                   {item.status}
                  </span>
                )}
              </div>

@@ -41,6 +41,7 @@ export interface Patent {
   date: string;
   link?: string;
   category?: string;
+  status?: string;
 }
 
 export interface EnglishScore {
