@@ -121,7 +121,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
       if (type === 'generic') {
         const urlToCopy = res.url || '';
         navigator.clipboard.writeText(urlToCopy).then(() => {
-          alert(`업로드 완료! 이미지 링크가 클립보드에 복사되었습니다.\n\n${urlToCopy}`);
+          alert(`업로드 완료! 파일 링크가 클립보드에 복사되었습니다.\n\n${urlToCopy}`);
         }).catch(() => {
           prompt('업로드 완료! 링크를 복사해주세요:', urlToCopy);
         });
@@ -248,7 +248,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           ) : (
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           )}
-          <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleUpload(e, 'generic')} />
+          <input type="file" className="hidden" accept="image/*,.pdf,.md,.txt" onChange={(e) => handleUpload(e, 'generic')} />
         </label>
       )}
 
