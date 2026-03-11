@@ -267,29 +267,30 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start lg:gap-8 px-4 sm:px-6 relative">
-        {/* Sticky Sidebar Navigation */}
-        <nav className="hidden md:flex sticky top-24 w-40 lg:w-48 shrink-0 flex-col gap-3 pt-24 pb-8 pr-4 text-sm text-[var(--text-muted)]">
-          {[
-            { id: 'intro', ko: '소개', en: 'Intro' },
-            { id: 'techStack', ko: '기술 스택', en: 'Skills' },
-            { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
-            { id: 'awards', ko: '수상/대회', en: 'Awards' },
-            { id: 'certifications', ko: '자격증', en: 'Certifications' },
-            { id: 'patents', ko: '특허', en: 'Patents' },
-            { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
-          ].map((item) => (
-            <a 
-              key={item.id} 
-              href={`#${item.id}`} 
-              className="hover:text-[var(--foreground)] hover:translate-x-1 transition-all"
-            >
-              {currentLang === 'ko' ? item.ko : item.en}
-            </a>
-          ))}
-        </nav>
+      <div className="w-full max-w-[90rem] mx-auto grid grid-cols-1 xl:grid-cols-[1fr_minmax(auto,48rem)_1fr] px-4 sm:px-6 gap-8 relative">
+        <aside className="hidden xl:block relative">
+          <nav className="sticky top-24 flex flex-col gap-3 pt-28 pb-8 pr-4 text-sm text-[var(--text-muted)] w-40 ml-auto mr-6 2xl:mr-16 items-end">
+            {[
+              { id: 'intro', ko: '소개', en: 'Intro' },
+              { id: 'techStack', ko: '기술 스택', en: 'Skills' },
+              { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
+              { id: 'awards', ko: '수상/대회', en: 'Awards' },
+              { id: 'certifications', ko: '자격증', en: 'Certifications' },
+              { id: 'patents', ko: '특허', en: 'Patents' },
+              { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
+            ].map((item) => (
+              <a 
+                key={item.id} 
+                href={`#${item.id}`} 
+                className="hover:text-[var(--foreground)] hover:-translate-x-1 transition-all"
+              >
+                {currentLang === 'ko' ? item.ko : item.en}
+              </a>
+            ))}
+          </nav>
+        </aside>
 
-        <main className="flex-1 w-full max-w-3xl min-w-0 py-16 sm:py-24 space-y-16 mx-auto">
+        <main className="w-full min-w-0 py-16 sm:py-24 space-y-16">
           
           {/* Intro */}
           <div className="relative group scroll-mt-24" id="intro">
