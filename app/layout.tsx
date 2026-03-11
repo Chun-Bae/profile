@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     images: [
       {
-        url: "/og.png",
+        url: `${process.env.OCI_BUCKET_READ_URL}og.png`,
         width: 1200,
         height: 630,
         alt: "YuSeok Choung",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AI Software Engineer - YuSeok Choung",
     description: "YuSeok Choung | AI Software Engineer Profile",
-    images: ["/og.png"],
+    images: [`${process.env.OCI_BUCKET_READ_URL}og.png`],
   },
 };
 
