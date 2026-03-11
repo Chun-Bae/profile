@@ -67,6 +67,14 @@ export interface Education {
   logoUrl?: string;
 }
 
+export interface Experience {
+  company: string;
+  role: string;
+  date: string;
+  description?: string;
+  link?: string;
+}
+
 export interface ProfileData {
   intro: Intro;
   techStack: TechStackCategory[];
@@ -76,4 +84,5 @@ export interface ProfileData {
   englishScores: EnglishScore[];
   awards?: Award[];
   educations?: Education[];
+  experiences?: Experience[];
 }
