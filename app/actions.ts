@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 export async function updateProfile(prevState: any, formData: FormData) {
   const jsonData = formData.get('profileData') as string
   const lang = (formData.get('lang') as string) || 'ko';
-  const bucketUrl = process.env.OCI_BUCKET_URL;
+  const writeUrl = process.env.OCI_BUCKET_WRITE_URL || process.env.OCI_BUCKET_URL;
 
   // 1. 유효성 검사 (올바른 JSON 형태인지 확인)
   try {
@@ -15,12 +15,12 @@ export async function updateProfile(prevState: any, formData: FormData) {
   }
 
   // 2. OCI URI 환경변수 확인
-  if (!bucketUrl) {
-    return { error: 'OCI_BUCKET_URL environment variable is not set. Cannot save to cloud.' }
+  if (!writeUrl) {
+    return { error: 'OCI_BUCKET_WRITE_URL environment variable is not set. Cannot save to cloud.' }
   }
 
   const filename = `profile_${lang}.json`;
-  const ociUrl = bucketUrl.endsWith('/') ? `${bucketUrl}${filename}` : `${bucketUrl}/${filename}`;
+  const ociUrl = writeUrl.endsWith('/') ? `${writeUrl}${filename}` : `${writeUrl}/${filename}`;
 
   // 3. OCI 버킷에 저장 (미리 인증된 요청의 읽기/쓰기 URL 사용)
   try {
@@ -42,7 +42,7 @@ export async function updateProfile(prevState: any, formData: FormData) {
 
   // 4. 저장 완료 및 서버 상태 갱신
   revalidatePath('/')
-  
+
   return { success: 'Profile updated successfully!' }
 }
 
@@ -54,11 +54,12 @@ export async function checkPassword(password: string) {
 export async function uploadImage(formData: FormData) {
   const file = formData.get('file') as File;
   const type = formData.get('type') as 'avatar' | 'banner' | 'generic';
-  
-  const bucketUrl = process.env.OCI_BUCKET_URL;
 
-  if (!bucketUrl) {
-    return { error: `OCI_BUCKET_URL 환경 변수가 .env.local에 설정되어 있지 않습니다.` }
+  const writeUrl = process.env.OCI_BUCKET_WRITE_URL || process.env.OCI_BUCKET_URL;
+  const readUrl = process.env.OCI_BUCKET_READ_URL || process.env.OCI_BUCKET_URL;
+
+  if (!writeUrl || !readUrl) {
+    return { error: `OCI_BUCKET_WRITE_URL 및 OCI_BUCKET_READ_URL 환경 변수가 .env.local에 설정되어 있지 않습니다.` }
   }
 
   let filename = file.name;
@@ -70,11 +71,12 @@ export async function uploadImage(formData: FormData) {
     filename = (formData.get('filename') as string) || encodeURIComponent(file.name.replace(/\s+/g, '_'));
   }
 
-  const ociUrl = bucketUrl.endsWith('/') ? `${bucketUrl}${filename}` : `${bucketUrl}/${filename}`;
+  const ociWriteUrl = writeUrl.endsWith('/') ? `${writeUrl}${filename}` : `${writeUrl}/${filename}`;
+  const ociReadUrl = readUrl.endsWith('/') ? `${readUrl}${filename}` : `${readUrl}/${filename}`;
 
   try {
     const arrayBuffer = await file.arrayBuffer();
-    const res = await fetch(ociUrl, {
+    const res = await fetch(ociWriteUrl, {
       method: 'PUT',
       headers: {
         'Content-Type': file.type || 'application/octet-stream',
@@ -86,9 +88,9 @@ export async function uploadImage(formData: FormData) {
       const text = await res.text();
       return { error: `업로드 실패: ${res.status} - ${text}` }
     }
-    
+
     revalidatePath('/');
-    return { success: true, url: ociUrl }
+    return { success: true, url: ociReadUrl }
   } catch (error: any) {
     return { error: `업로드 오류: ${error.message}` }
   }
