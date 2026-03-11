@@ -271,12 +271,12 @@ export function ExperienceSection({ items }: { items: ProfileData["experiences"]
   if (!items || items.length === 0) return null;
   return (
     <div className="space-y-6">
-      <ul className="space-y-6 list-none p-0 m-0">
+      <ul className="space-y-10 list-none p-0 m-0">
         {items.map((item, i) => (
-          <li key={i} className="flex gap-4 sm:gap-6 items-start relative group pl-4 border-l-2 border-[var(--border)]">
-             <div className="flex-1 min-w-0 pb-4 group-last:pb-0">
-               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-1">
-                 <h3 className="text-xl font-bold text-[var(--foreground)] truncate">
+          <li key={i} className="relative group">
+             <div className="w-full">
+               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-2">
+                 <h3 className="text-xl font-bold text-[var(--foreground)] leading-snug">
                    {item.link ? (
                      <a href={item.link} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] hover:underline">
                        {item.company} ↗
@@ -285,11 +285,11 @@ export function ExperienceSection({ items }: { items: ProfileData["experiences"]
                      item.company
                    )}
                  </h3>
-                 <span className="text-sm font-semibold text-[var(--text-muted)] whitespace-nowrap bg-zinc-100 dark:bg-zinc-800/50 px-2 py-0.5 rounded-md border border-[var(--border)]">
+                 <span className="text-sm font-semibold text-[var(--text-muted)] whitespace-nowrap bg-zinc-100 dark:bg-zinc-800/50 px-2 py-0.5 rounded-md border border-[var(--border)] shrink-0 mt-1 sm:mt-0">
                    {item.date}
                  </span>
                </div>
-               <p className="text-base font-semibold text-[var(--accent)] mb-3">{item.role}</p>
+               <p className="text-base font-semibold text-[var(--accent)] mb-4">{item.role}</p>
                {item.description && (
                  <p className="text-sm text-[var(--foreground)] leading-relaxed bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-[var(--border)] shadow-sm whitespace-pre-line">
                    {item.description}
