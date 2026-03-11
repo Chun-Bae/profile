@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL
     ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : process.env.VERCEL_URL
-      ? new URL(`https://${process.env.VERCEL_URL}`)
+    : process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
+      ? new URL(`https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`)
       : new URL("http://localhost:3000");
 
 export const metadata: Metadata = {
