@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { updateProfile, checkPassword, uploadImage } from '@/app/actions'
 import { ProfileData } from '@/types/profile'
 import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection, EducationSection, ExperienceSection } from './ProfileSections'
+import ProjectDetailPanel from './ProjectDetailPanel'
+import { PortfolioItem } from '@/types/profile'
 import { useTheme } from 'next-themes'
 
 export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { initialProfileKO: ProfileData, initialProfileEN: ProfileData }) {
@@ -84,6 +86,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isUploadingBanner, setIsUploadingBanner] = useState(false)
   const [isUploadingAsset, setIsUploadingAsset] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(null)
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner' | 'generic') => {
     if (!e.target.files || !e.target.files[0]) return;
@@ -436,7 +439,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                   <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
                 </h2>
                 {profile.portfolio?.length > 0 ? (
-                  <PortfolioSection items={profile.portfolio} />
+                  <PortfolioSection items={profile.portfolio} onDetail={setSelectedProject} />
                 ) : (
                   <p className="text-sm text-[var(--text-muted)] italic">No projects added yet.</p>
                 )}
@@ -625,6 +628,12 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </footer>
         </main>
       </div>
-    </>
+    </div>
+
+    <ProjectDetailPanel
+      item={selectedProject}
+      onClose={() => setSelectedProject(null)}
+    />
+  </>
   )
 }

@@ -27,6 +27,7 @@ export interface PortfolioItem {
   github?: string;
   technologies: string[];
   date: string;
+  mdFile?: string;
 }
 
 export interface Certification {

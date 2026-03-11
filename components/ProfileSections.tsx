@@ -102,7 +102,7 @@ export function TechStackSection({ stack }: { stack: ProfileData["techStack"] })
   );
 }
 
-export function PortfolioSection({ items }: { items: ProfileData["portfolio"] }) {
+export function PortfolioSection({ items, onDetail }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void }) {
   return (
     <div className="space-y-8">
       {items.map((item, i) => (
@@ -129,7 +129,7 @@ export function PortfolioSection({ items }: { items: ProfileData["portfolio"] })
               ))}
             </div>
 
-            <div className="flex gap-4 text-sm font-medium pt-4 border-t border-[var(--border)]">
+            <div className="flex flex-wrap items-center gap-4 text-sm font-medium pt-4 border-t border-[var(--border)]">
               {item.link && (
                 <a href={item.link} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
                   Live Demo ↗
@@ -139,6 +139,14 @@ export function PortfolioSection({ items }: { items: ProfileData["portfolio"] })
                 <a href={item.github} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
                   Source Code ↗
                 </a>
+              )}
+              {item.mdFile && onDetail && (
+                <button
+                  onClick={() => onDetail(item)}
+                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity"
+                >
+                  자세히 보기 →
+                </button>
               )}
             </div>
           </div>
