@@ -449,7 +449,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
 
         {/* Experience */}
-        <div className="relative group mt-16 scroll-mt-24" id="experience">
+        <div className="relative group mt-16 scroll-mt-24" id="experiences">
           {editingSection === 'experiences' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-2">Edit Experiences (JSON array)</h3>
