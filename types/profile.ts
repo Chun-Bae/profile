@@ -59,6 +59,7 @@ export interface Award {
   organization?: string;
   description?: string;
   prize?: string;
+  link?: string;
 }
 
 export interface Education {

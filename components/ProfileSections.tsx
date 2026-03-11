@@ -288,7 +288,14 @@ export function AwardSection({ items }: { items: ProfileData["awards"] }) {
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-lg font-bold text-[var(--foreground)] truncate">{item.title}</h3>
+                {item.link ? (
+                  <a href={item.link} target="_blank" rel="noreferrer" className="text-lg font-bold text-[var(--foreground)] hover:text-[var(--accent)] hover:underline truncate flex items-center gap-1.5 group" title="View Details">
+                    {item.title}
+                    <svg className="w-4 h-4 text-[var(--text-muted)] opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                  </a>
+                ) : (
+                  <h3 className="text-lg font-bold text-[var(--foreground)] truncate">{item.title}</h3>
+                )}
                 {item.prize && (
                   <span className={`px-2 py-0.5 text-xs font-bold leading-none border rounded-md whitespace-nowrap ${getPrizeColor(item.prize)}`}>
                     {item.prize}
