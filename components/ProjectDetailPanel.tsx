@@ -5,7 +5,6 @@ import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
-import rehypeRaw from 'rehype-raw'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { PortfolioItem } from '@/types/profile'
@@ -15,67 +14,7 @@ interface ProjectDetailPanelProps {
   onClose: () => void
 }
 
-// Custom styled components for react-markdown
-const mdComponents: Components = {
-  h1: ({ children }) => (
-    <h1 className="text-3xl font-extrabold text-[var(--foreground)] mt-8 mb-4 pb-3 border-b border-[var(--border)] tracking-tight leading-tight">
-      {children}
-    </h1>
-  ),
-  h2: ({ children }) => (
-    <h2 className="text-2xl font-bold text-[var(--foreground)] mt-8 mb-3 tracking-tight">
-      {children}
-    </h2>
-  ),
-  h3: ({ children }) => (
-    <h3 className="text-lg font-bold text-[var(--foreground)] mt-6 mb-2">
-      {children}
-    </h3>
-  ),
-  h4: ({ children }) => (
-    <h4 className="text-base font-semibold text-[var(--foreground)] mt-4 mb-1">
-      {children}
-    </h4>
-  ),
-  p: ({ children }) => (
-    <p className="text-[var(--foreground)] leading-7 mb-4 text-[15px]">
-      {children}
-    </p>
-  ),
-  a: ({ href, children }) => (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="text-[var(--accent)] underline underline-offset-2 hover:opacity-75 transition-opacity"
-    >
-      {children}
-    </a>
-  ),
-  ul: ({ children }) => (
-    <ul className="mb-4 space-y-1.5 pl-2 list-none">
-      {children}
-    </ul>
-  ),
-  ol: ({ children }) => (
-    <ol className="mb-4 space-y-1.5 pl-5 list-decimal marker:text-[var(--text-muted)]">
-      {children}
-    </ol>
-  ),
-  li: ({ children }) => (
-    <li className="text-[var(--foreground)] text-[15px] leading-7 flex gap-2 items-start">
-      <span className="mt-2.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--text-muted)]" />
-      <span className="flex-1">{children}</span>
-    </li>
-  ),
-  blockquote: ({ children }) => (
-    <blockquote className="my-6 pl-4 border-l-4 border-[var(--accent)] bg-zinc-50 dark:bg-zinc-900/60 rounded-r-lg py-3 pr-4 text-[var(--text-muted)] italic text-[15px]">
-      {children}
-    </blockquote>
-  ),
-}
-
-// Separate component so we can use useState for copy button
+// ─── Copy-capable code block ───────────────────────────────────────────────
 function CodeBlock({ language, children }: { language: string; children: string }) {
   const [copied, setCopied] = useState(false)
 
@@ -88,7 +27,6 @@ function CodeBlock({ language, children }: { language: string; children: string 
 
   return (
     <div className="my-5 rounded-xl overflow-hidden border border-zinc-700 shadow-lg">
-      {/* Top bar: language + copy */}
       <div className="flex items-center justify-between px-4 py-2 bg-zinc-800 border-b border-zinc-700">
         <span className="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider">
           {language}
@@ -123,12 +61,9 @@ function CodeBlock({ language, children }: { language: string; children: string 
           borderRadius: 0,
           fontSize: '0.85rem',
           lineHeight: '1.6',
-          background: 'transparent',        // 투명 배경
-          backgroundColor: '#1a1b1e',       // 컨테이너 배경은 여기서 제어
+          background: '#1a1b1e',
         }}
-        codeTagProps={{
-          style: { background: 'transparent' }  // code 태그 배경도 투명
-        }}
+        codeTagProps={{ style: { background: 'transparent' } }}
         showLineNumbers
         lineNumberStyle={{ color: '#4b5563', minWidth: '2.5em', userSelect: 'none' }}
       >
@@ -138,19 +73,65 @@ function CodeBlock({ language, children }: { language: string; children: string 
   )
 }
 
-// Re-add after CodeBlock
-const mdComponentsInner: Components = {
-  ...mdComponents,  // placeholder — overridden below
-}
-void mdComponentsInner  // suppress unused warning
-
-// Override code/pre inside the component (needs access to CodeBlock)
-const buildComponents = (): Components => ({
-  ...mdComponents,
+// ─── Markdown component map ────────────────────────────────────────────────
+const mdComponents: Components = {
+  h1: ({ children }) => (
+    <h1 className="text-3xl font-extrabold text-[var(--foreground)] mt-8 mb-4 pb-3 border-b border-[var(--border)] tracking-tight leading-tight">
+      {children}
+    </h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="text-2xl font-bold text-[var(--foreground)] mt-8 mb-3 tracking-tight">
+      {children}
+    </h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-lg font-bold text-[var(--foreground)] mt-6 mb-2">
+      {children}
+    </h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="text-base font-semibold text-[var(--foreground)] mt-4 mb-1">
+      {children}
+    </h4>
+  ),
+  p: ({ children }) => (
+    <p className="text-[var(--foreground)] leading-7 mb-4 text-[15px]">
+      {children}
+    </p>
+  ),
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noreferrer"
+      className="text-[var(--accent)] underline underline-offset-2 hover:opacity-75 transition-opacity">
+      {children}
+    </a>
+  ),
+  ul: ({ children }) => (
+    <ul className="mb-4 space-y-1.5 pl-2 list-none">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="mb-4 space-y-1.5 pl-5 list-decimal marker:text-[var(--text-muted)]">{children}</ol>
+  ),
+  li: ({ children }) => (
+    <li className="text-[var(--foreground)] text-[15px] leading-7 flex gap-2 items-start">
+      <span className="mt-2.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--text-muted)]" />
+      <span className="flex-1">{children}</span>
+    </li>
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className="my-6 pl-4 border-l-4 border-[var(--accent)] bg-zinc-50 dark:bg-zinc-900/60 rounded-r-lg py-3 pr-4 text-[var(--text-muted)] italic text-[15px]">
+      {children}
+    </blockquote>
+  ),
+  // code: block & inline
   code({ className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || '')
     if (match) {
-      return <CodeBlock language={match[1]}>{String(children).replace(/\n$/, '')}</CodeBlock>
+      return (
+        <CodeBlock language={match[1]}>
+          {String(children).replace(/\n$/, '')}
+        </CodeBlock>
+      )
     }
     // Inline code — red
     return (
@@ -163,12 +144,9 @@ const buildComponents = (): Components => ({
     )
   },
   pre: ({ children }) => <>{children}</>,
-})
   table: ({ children }) => (
     <div className="my-6 overflow-x-auto rounded-xl border border-[var(--border)]">
-      <table className="w-full text-sm text-left">
-        {children}
-      </table>
+      <table className="w-full text-sm text-left">{children}</table>
     </div>
   ),
   thead: ({ children }) => (
@@ -177,28 +155,21 @@ const buildComponents = (): Components => ({
     </thead>
   ),
   tbody: ({ children }) => (
-    <tbody className="divide-y divide-[var(--border)]">
-      {children}
-    </tbody>
+    <tbody className="divide-y divide-[var(--border)]">{children}</tbody>
   ),
   tr: ({ children }) => (
-    <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">
-      {children}
-    </tr>
+    <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">{children}</tr>
   ),
-  th: ({ children }) => (
-    <th className="px-4 py-3 text-[var(--text-muted)]">{children}</th>
-  ),
-  td: ({ children }) => (
-    <td className="px-4 py-3 text-[var(--foreground)]">{children}</td>
-  ),
-  hr: () => (
-    <hr className="my-8 border-[var(--border)]" />
-  ),
+  th: ({ children }) => <th className="px-4 py-3 text-[var(--text-muted)]">{children}</th>,
+  td: ({ children }) => <td className="px-4 py-3 text-[var(--foreground)]">{children}</td>,
+  hr: () => <hr className="my-8 border-[var(--border)]" />,
+  // Images – use plain <img> so any external URL (OCI bucket etc.) works
   img: ({ src, alt }) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt ?? ''}
+      referrerPolicy="no-referrer"
       className="my-6 w-full rounded-xl border border-[var(--border)] shadow-sm object-cover"
     />
   ),
@@ -210,6 +181,7 @@ const buildComponents = (): Components => ({
   ),
 }
 
+// ─── Main Component ────────────────────────────────────────────────────────
 export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanelProps) {
   const [mdContent, setMdContent] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -230,7 +202,6 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
     }
   }, [item])
 
-  // ESC key
   useEffect(() => {
     const handle = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -242,7 +213,6 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
     return () => window.removeEventListener('keydown', handle)
   }, [onClose, isFullscreen])
 
-  // Prevent body scroll when open
   useEffect(() => {
     if (item) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
@@ -257,7 +227,7 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
       {/* Backdrop */}
       <div
         className={`fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        onClick={() => { if (isFullscreen) setIsFullscreen(false); else onClose(); }}
+        onClick={() => { if (isFullscreen) setIsFullscreen(false); else onClose() }}
       />
 
       {/* Side Panel */}
@@ -298,9 +268,8 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
           </div>
         </div>
 
-        {/* Scrollable Content */}
+        {/* Content */}
         <div className={`flex-1 overflow-y-auto py-8 ${isFullscreen ? 'px-8 md:px-24 lg:px-48 xl:px-72' : 'px-6 md:px-10'}`}>
-          {/* Meta */}
           {item && (
             <div className="mb-8 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -314,7 +283,7 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
                 ))}
               </div>
               {(item.link || item.github) && (
-                <div className="flex gap-3 text-sm font-medium">
+                <div className="flex gap-3">
                   {item.link && (
                     <a href={item.link} target="_blank" rel="noreferrer"
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity text-xs font-bold">
@@ -333,7 +302,6 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
             </div>
           )}
 
-          {/* Loading */}
           {loading && (
             <div className="flex items-center gap-3 text-sm text-[var(--text-muted)] py-12 justify-center">
               <span className="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full" />
@@ -341,18 +309,16 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
             </div>
           )}
 
-          {/* MD Content */}
           {!loading && mdContent && (
             <ReactMarkdown
               remarkPlugins={[remarkGfm, remarkMath]}
-              rehypePlugins={[rehypeKatex, rehypeRaw]}
-              components={buildComponents()}
+              rehypePlugins={[rehypeKatex]}
+              components={mdComponents}
             >
               {mdContent}
             </ReactMarkdown>
           )}
 
-          {/* Empty state */}
           {!loading && !mdContent && item && (
             <div className="text-center py-16 text-[var(--text-muted)]">
               <svg className="w-12 h-12 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
