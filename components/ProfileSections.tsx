@@ -111,10 +111,11 @@ const getBadgeStyle = (badge: string | unknown) => {
   if (b.includes('backend')) return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
   if (b.includes('devops')) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
   if (b.includes('mlops')) return 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300';
-  if (b.includes('research') || b.includes('연구')) return 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300';
+  if (b.includes('research')) return 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300';
   if (b.includes('vision')) return 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300';
   if (b.includes('nlp')) return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300';
   if (b.includes('llm')) return 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/40 dark:text-fuchsia-300';
+  if (b.includes('serverless')) return 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300';
   return 'text-[var(--background)] bg-[var(--foreground)]';
 };
 
