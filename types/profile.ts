@@ -67,6 +67,7 @@ export interface Education {
   date: string;
   major?: string;
   gpa?: string;
+  gpaLink?: string;
   notes?: string;
   logoUrl?: string;
 }
