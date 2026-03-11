@@ -372,7 +372,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (profile.techStack?.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  Technical Skills
+                  {currentLang === 'ko' ? '기술 스택' : 'Technical Skills'}
                   <EditButton onClick={() => startEdit('techStack', profile.techStack || [])} />
                 </h2>
                 {profile.techStack?.length > 0 ? (
@@ -397,7 +397,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (profile.portfolio?.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  Projects
+                  {currentLang === 'ko' ? '프로젝트' : 'Projects'}
                   <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
                 </h2>
                 {profile.portfolio?.length > 0 ? (
@@ -422,7 +422,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             ((profile.awards && profile.awards.length > 0) || isGlobalEditMode) && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  Awards & Competitions
+                  {currentLang === 'ko' ? '수상 및 대회' : 'Awards & Competitions'}
                   <EditButton onClick={() => startEdit('awards', profile.awards || [])} />
                 </h2>
                 {profile.awards && profile.awards.length > 0 ? (
@@ -446,7 +446,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (formattedCertifications.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   Certifications
+                   {currentLang === 'ko' ? '자격증' : 'Certifications'}
                    <EditButton onClick={() => startEdit('certifications', profile.certifications || [])} />
                  </h2>
                  {formattedCertifications.length > 0 ? (
@@ -496,7 +496,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (formattedEnglishScores.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   Language Scores
+                   {currentLang === 'ko' ? '어학 점수' : 'Language Scores'}
                    <EditButton onClick={() => startEdit('englishScores', profile.englishScores || [])} />
                  </h2>
                  {formattedEnglishScores.length > 0 ? (
