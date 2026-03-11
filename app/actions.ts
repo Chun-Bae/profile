@@ -44,7 +44,7 @@ export async function updateProfile(prevState: any, formData: FormData) {
 }
 
 export async function checkPassword(password: string) {
-  const sitePassword = process.env.SITE_PASSWORD || '1234';
+  const sitePassword = process.env.SITE_EDIT_PASSWORD;
   return password === sitePassword;
 }
 

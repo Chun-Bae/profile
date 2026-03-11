@@ -267,10 +267,32 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
       )}
 
-      <main className="max-w-3xl mx-auto px-6 py-16 sm:py-24 space-y-16">
-        
-        {/* Intro */}
-        <div className="relative group">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start lg:gap-8 px-4 sm:px-6 relative">
+        {/* Sticky Sidebar Navigation */}
+        <nav className="hidden md:flex sticky top-24 w-40 lg:w-48 shrink-0 flex-col gap-3 pt-24 pb-8 pr-4 text-sm text-[var(--text-muted)]">
+          {[
+            { id: 'intro', ko: '소개', en: 'Intro' },
+            { id: 'techStack', ko: '기술 스택', en: 'Skills' },
+            { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
+            { id: 'awards', ko: '수상/대회', en: 'Awards' },
+            { id: 'certifications', ko: '자격증', en: 'Certifications' },
+            { id: 'patents', ko: '특허', en: 'Patents' },
+            { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
+          ].map((item) => (
+            <a 
+              key={item.id} 
+              href={`#${item.id}`} 
+              className="hover:text-[var(--foreground)] hover:translate-x-1 transition-all"
+            >
+              {currentLang === 'ko' ? item.ko : item.en}
+            </a>
+          ))}
+        </nav>
+
+        <main className="flex-1 w-full max-w-3xl min-w-0 py-16 sm:py-24 space-y-16 mx-auto">
+          
+          {/* Intro */}
+          <div className="relative group scroll-mt-24" id="intro">
           {editingSection === 'intro' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-4">Edit Intro</h3>
@@ -315,7 +337,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
 
         {/* Tech Stack */}
-        <div className="relative group">
+        <div className="relative group scroll-mt-24" id="techStack">
           {editingSection === 'techStack' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-2">Edit Technical Skills (JSON array)</h3>
@@ -340,7 +362,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
 
         {/* Portfolio */}
-        <div className="relative group mt-16">
+        <div className="relative group mt-16 scroll-mt-24" id="portfolio">
           {editingSection === 'portfolio' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-2">Edit Projects (JSON array)</h3>
@@ -365,7 +387,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
 
         {/* Awards/Competitions */}
-        <div className="relative group mt-16">
+        <div className="relative group mt-16 scroll-mt-24" id="awards">
           {editingSection === 'awards' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-2">Edit Awards/Competitions (JSON array)</h3>
@@ -389,7 +411,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           )}
         </div>
         {/* Certifications */}
-        <div className="relative group mt-16">
+        <div className="relative group mt-16 scroll-mt-24" id="certifications">
           {editingSection === 'certifications' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-2">Edit Certifications (JSON array)</h3>
@@ -414,7 +436,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
         
         {/* Patents */}
-        <div className="relative group mt-16">
+        <div className="relative group mt-16 scroll-mt-24" id="patents">
           {editingSection === 'patents' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-2">Edit Patents (JSON array)</h3>
@@ -439,7 +461,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </div>
 
         {/* Language Scores */}
-        <div className="relative group mt-16">
+        <div className="relative group mt-16 scroll-mt-24" id="englishScores">
           {editingSection === 'englishScores' ? (
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                <h3 className="text-lg font-bold mb-2">Edit Language Scores (JSON array)</h3>
@@ -467,7 +489,8 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         <footer className="pt-12 mt-24 border-t border-[var(--border)] text-[var(--text-muted)] text-sm flex flex-col items-center gap-2">
            <p>Copyright © {new Date().getFullYear()} Chun-Bae. All rights reserved.</p>
         </footer>
-      </main>
+        </main>
+      </div>
     </>
   )
 }
