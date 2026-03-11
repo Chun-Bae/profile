@@ -3,6 +3,11 @@
 import { useEffect, useState, useRef } from 'react'
 import ReactMarkdown, { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import rehypeRaw from 'rehype-raw'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { PortfolioItem } from '@/types/profile'
 
 interface ProjectDetailPanelProps {
@@ -48,7 +53,7 @@ const mdComponents: Components = {
     </a>
   ),
   ul: ({ children }) => (
-    <ul className="mb-4 space-y-1.5 pl-5 list-none">
+    <ul className="mb-4 space-y-1.5 pl-2 list-none">
       {children}
     </ul>
   ),
@@ -60,7 +65,7 @@ const mdComponents: Components = {
   li: ({ children }) => (
     <li className="text-[var(--foreground)] text-[15px] leading-7 flex gap-2 items-start">
       <span className="mt-2.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--text-muted)]" />
-      <span>{children}</span>
+      <span className="flex-1">{children}</span>
     </li>
   ),
   blockquote: ({ children }) => (
@@ -68,25 +73,49 @@ const mdComponents: Components = {
       {children}
     </blockquote>
   ),
-  code: ({ inline, className, children, ...props }: { inline?: boolean; className?: string; children?: React.ReactNode }) => {
-    if (inline) {
+  // Code block with syntax highlighting
+  code({ className, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || '')
+    const isBlock = !!match
+
+    if (isBlock) {
       return (
-        <code className="px-1.5 py-0.5 text-sm font-mono bg-zinc-100 dark:bg-zinc-800 text-[var(--accent)] rounded border border-[var(--border)]">
-          {children}
-        </code>
+        <div className="my-5 rounded-xl overflow-hidden border border-zinc-700 shadow-inner">
+          {/* Language label */}
+          <div className="flex items-center justify-between px-4 py-2 bg-zinc-800 border-b border-zinc-700">
+            <span className="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider">
+              {match[1]}
+            </span>
+            <span className="text-xs text-zinc-500">code</span>
+          </div>
+          <SyntaxHighlighter
+            style={oneDark}
+            language={match[1]}
+            PreTag="div"
+            customStyle={{
+              margin: 0,
+              borderRadius: 0,
+              fontSize: '0.85rem',
+              lineHeight: '1.6',
+              background: '#1a1b1e',
+            }}
+            showLineNumbers
+            lineNumberStyle={{ color: '#555', minWidth: '2.5em' }}
+          >
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        </div>
       )
     }
+
+    // Inline code
     return (
-      <code className={`block text-sm font-mono text-[var(--foreground)] ${className ?? ''}`} {...props}>
+      <code className="px-1.5 py-0.5 text-sm font-mono bg-zinc-100 dark:bg-zinc-800 text-[var(--accent)] rounded border border-[var(--border)]" {...props}>
         {children}
       </code>
     )
   },
-  pre: ({ children }) => (
-    <pre className="my-5 p-5 rounded-xl bg-zinc-900 dark:bg-zinc-950 border border-zinc-700 overflow-x-auto text-sm leading-relaxed shadow-inner">
-      {children}
-    </pre>
-  ),
+  pre: ({ children }) => <>{children}</>,  // SyntaxHighlighter handles its own <pre>
   table: ({ children }) => (
     <div className="my-6 overflow-x-auto rounded-xl border border-[var(--border)]">
       <table className="w-full text-sm text-left">
@@ -194,11 +223,9 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
             {item?.title}
           </h2>
           <div className="flex items-center gap-1 shrink-0">
-            {/* Fullscreen Toggle */}
             <button
               onClick={() => setIsFullscreen(f => !f)}
               className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-[var(--text-muted)]"
-              aria-label={isFullscreen ? '사이드 패널로 보기' : '전체 화면으로 보기'}
               title={isFullscreen ? '사이드 패널로 보기 (ESC)' : '전체 화면으로 보기'}
             >
               {isFullscreen ? (
@@ -211,11 +238,9 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
                 </svg>
               )}
             </button>
-            {/* Close */}
             <button
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-[var(--text-muted)]"
-              aria-label="닫기"
               title="닫기 (ESC)"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -227,7 +252,7 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
 
         {/* Scrollable Content */}
         <div className={`flex-1 overflow-y-auto py-8 ${isFullscreen ? 'px-8 md:px-24 lg:px-48 xl:px-72' : 'px-6 md:px-10'}`}>
-          {/* Meta: Date + Tags */}
+          {/* Meta */}
           {item && (
             <div className="mb-8 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -240,8 +265,6 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
                   </span>
                 ))}
               </div>
-
-              {/* Quick Links */}
               {(item.link || item.github) && (
                 <div className="flex gap-3 text-sm font-medium">
                   {item.link && (
@@ -258,12 +281,11 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
                   )}
                 </div>
               )}
-
               <hr className="border-[var(--border)]" />
             </div>
           )}
 
-          {/* MD Content */}
+          {/* Loading */}
           {loading && (
             <div className="flex items-center gap-3 text-sm text-[var(--text-muted)] py-12 justify-center">
               <span className="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full" />
@@ -271,14 +293,18 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
             </div>
           )}
 
+          {/* MD Content */}
           {!loading && mdContent && (
-            <div>
-              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                {mdContent}
-              </ReactMarkdown>
-            </div>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex, rehypeRaw]}
+              components={mdComponents}
+            >
+              {mdContent}
+            </ReactMarkdown>
           )}
 
+          {/* Empty state */}
           {!loading && !mdContent && item && (
             <div className="text-center py-16 text-[var(--text-muted)]">
               <svg className="w-12 h-12 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
