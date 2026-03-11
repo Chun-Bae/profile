@@ -136,8 +136,15 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
       const formData = new FormData()
       formData.append('profileData', JSON.stringify(newProfile))
       formData.append('lang', currentLang)
-      await updateProfile(null, formData)
-      setEditingSection(null)
+      const res = await updateProfile(null, formData)
+      
+      if (res?.error) {
+        alert("저장 실패: " + res.error)
+        // Revert optimistic update
+        setProfile(profile)
+      } else {
+        setEditingSection(null)
+      }
     })
   }
 
