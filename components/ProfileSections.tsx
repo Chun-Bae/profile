@@ -192,3 +192,26 @@ export function AwardSection({ items }: { items: ProfileData["awards"] }) {
     </ul>
   );
 }
+
+export function EducationSection({ items }: { items: ProfileData["educations"] }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <ul className="space-y-4 list-none p-0 m-0">
+      {items.map((item, i) => (
+        <li key={i} className="flex gap-4 items-start border border-[var(--border)] rounded-xl p-5 bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] hover:shadow-md transition-shadow">
+          <div className="flex-1">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2 border-b border-[var(--border)] pb-3">
+              <h3 className="text-lg font-bold text-[var(--foreground)]">{item.schoolName}</h3>
+              <div className="flex items-center gap-3 text-sm">
+                <span className={`font-semibold ${item.status === '재학' || item.status === 'Attending' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'}`}>{item.status}</span>
+                <time className="text-[var(--text-muted)] font-medium bg-zinc-100 dark:bg-zinc-800/50 px-2 py-1 rounded-md">{item.date}</time>
+              </div>
+            </div>
+            {item.gpa && <p className="text-sm text-[var(--foreground)] mt-3 flex items-center gap-2"><span className="font-bold text-[var(--text-muted)]">GPA</span> {item.gpa}</p>}
+            {item.notes && <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">{item.notes}</p>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}

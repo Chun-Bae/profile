@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateProfile, checkPassword, uploadImage } from '@/app/actions'
 import { ProfileData } from '@/types/profile'
-import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection } from './ProfileSections'
+import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection, EducationSection } from './ProfileSections'
 import { useTheme } from 'next-themes'
 
 export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { initialProfileKO: ProfileData, initialProfileEN: ProfileData }) {
@@ -276,8 +276,9 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
               { id: 'awards', ko: '수상/대회', en: 'Awards' },
               { id: 'certifications', ko: '자격증', en: 'Certifications' },
-              { id: 'patents', ko: '특허', en: 'Patents' },
+              { id: 'patents', ko: '특허 및 등록증', en: 'Patents & Registrations' },
               { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
+              { id: 'educations', ko: '학력', en: 'Education' },
             ].map((item) => (
               <a 
                 key={item.id} 
@@ -448,7 +449,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             (formattedPatents.length > 0 || isGlobalEditMode) && (
               <div className="space-y-8">
                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   Patents
+                   {currentLang === 'ko' ? '특허 및 등록증' : 'Patents & Registrations'}
                    <EditButton onClick={() => startEdit('patents', profile.patents || [])} />
                  </h2>
                  {formattedPatents.length > 0 ? (
@@ -480,6 +481,31 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                    <ListSection items={formattedEnglishScores} />
                  ) : (
                    <p className="text-sm text-[var(--text-muted)] italic">No language scores added yet.</p>
+                 )}
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Education */}
+        <div className="relative group mt-16 scroll-mt-24" id="educations">
+          {editingSection === 'educations' ? (
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+               <h3 className="text-lg font-bold mb-2">Edit Education (JSON array)</h3>
+               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('educations')} />
+            </div>
+          ) : (
+            ((profile.educations && profile.educations.length > 0) || isGlobalEditMode) && (
+              <div className="space-y-8">
+                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                   {currentLang === 'ko' ? '학력' : 'Education'}
+                   <EditButton onClick={() => startEdit('educations', profile.educations || [])} />
+                 </h2>
+                 {profile.educations && profile.educations.length > 0 ? (
+                   <EducationSection items={profile.educations} />
+                 ) : (
+                   <p className="text-sm text-[var(--text-muted)] italic">No education added yet.</p>
                  )}
               </div>
             )

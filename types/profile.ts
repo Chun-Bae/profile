@@ -55,6 +55,14 @@ export interface Award {
   description?: string;
 }
 
+export interface Education {
+  schoolName: string;
+  status: string;
+  date: string;
+  gpa?: string;
+  notes?: string;
+}
+
 export interface ProfileData {
   intro: Intro;
   techStack: TechStackCategory[];
@@ -63,4 +71,5 @@ export interface ProfileData {
   patents: Patent[];
   englishScores: EnglishScore[];
   awards?: Award[];
+  educations?: Education[];
 }
