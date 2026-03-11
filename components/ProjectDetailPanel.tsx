@@ -195,7 +195,7 @@ export default function ProjectDetailPanel({ item, onClose }: ProjectDetailPanel
 
     if (item.mdFile) {
       setLoading(true)
-      fetch(item.mdFile)
+      fetch(item.mdFile, { cache: 'no-store' })
         .then(res => res.ok ? res.text() : null)
         .then(text => { setMdContent(text); setLoading(false) })
         .catch(() => setLoading(false))
