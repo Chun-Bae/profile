@@ -105,6 +105,19 @@ export function TechStackSection({ stack }: { stack: ProfileData["techStack"] })
   );
 }
 
+const getBadgeStyle = (badge: string | unknown) => {
+  const b = String(badge).toLowerCase();
+  if (b.includes('frontend')) return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
+  if (b.includes('backend')) return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
+  if (b.includes('devops')) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
+  if (b.includes('mlops')) return 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300';
+  if (b.includes('research') || b.includes('연구')) return 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300';
+  if (b.includes('vision')) return 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300';
+  if (b.includes('nlp')) return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300';
+  if (b.includes('llm')) return 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/40 dark:text-fuchsia-300';
+  return 'text-[var(--background)] bg-[var(--foreground)]';
+};
+
 export function PortfolioSection({ items, onDetail, lang = 'ko', expandedIndices, onToggleExpand }: { 
   items: ProfileData["portfolio"], 
   onDetail?: (item: ProfileData["portfolio"][0]) => void, 
@@ -141,9 +154,9 @@ export function PortfolioSection({ items, onDetail, lang = 'ko', expandedIndices
             {isExpanded && (
               <div className="px-6 pb-6 pt-2 border-t border-[var(--border)]">
                 {item.badges && (Array.isArray(item.badges) ? item.badges : [item.badges]).length > 0 && (
-                  <div className="flex gap-2 mb-3"> 
+                  <div className="flex flex-wrap gap-2 mt-3 mb-4"> 
                     {(Array.isArray(item.badges) ? item.badges : [item.badges]).map((badge, b) => (
-                      <span key={b} className="px-2 py-0.5 text-[0.7rem] font-extrabold uppercase tracking-widest text-[var(--background)] bg-[var(--foreground)] rounded-md shadow-sm">
+                      <span key={b} className={`px-2 py-0.5 text-[0.7rem] font-extrabold uppercase tracking-widest rounded-md shadow-sm ${getBadgeStyle(badge)}`}>
                         {String(badge)}
                       </span>
                     ))}
