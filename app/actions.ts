@@ -79,7 +79,7 @@ export async function uploadImage(formData: FormData) {
     const res = await fetch(ociWriteUrl, {
       method: 'PUT',
       headers: {
-        'Content-Type': file.type || 'application/octet-stream',
+        'Content-Type': file.type || (filename.endsWith('.md') ? 'text/markdown' : filename.endsWith('.txt') ? 'text/plain' : 'application/octet-stream'),
       },
       body: Buffer.from(arrayBuffer),
     });

@@ -102,7 +102,7 @@ export function TechStackSection({ stack }: { stack: ProfileData["techStack"] })
   );
 }
 
-export function PortfolioSection({ items }: { items: ProfileData["portfolio"] }) {
+export function PortfolioSection({ items, onDetail }: { items: ProfileData["portfolio"], onDetail?: (item: ProfileData["portfolio"][0]) => void }) {
   return (
     <div className="space-y-8">
       {items.map((item, i) => (
@@ -129,7 +129,7 @@ export function PortfolioSection({ items }: { items: ProfileData["portfolio"] })
               ))}
             </div>
 
-            <div className="flex gap-4 text-sm font-medium pt-4 border-t border-[var(--border)]">
+            <div className="flex flex-wrap items-center gap-4 text-sm font-medium pt-4 border-t border-[var(--border)]">
               {item.link && (
                 <a href={item.link} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
                   Live Demo ↗
@@ -139,6 +139,14 @@ export function PortfolioSection({ items }: { items: ProfileData["portfolio"] })
                 <a href={item.github} target="_blank" rel="noreferrer" className="prose-link flex items-center gap-1">
                   Source Code ↗
                 </a>
+              )}
+              {item.mdFile && onDetail && (
+                <button
+                  onClick={() => onDetail(item)}
+                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--foreground)] text-[var(--background)] hover:opacity-80 transition-opacity"
+                >
+                  자세히 보기 →
+                </button>
               )}
             </div>
           </div>
@@ -264,5 +272,41 @@ export function EducationSection({ items }: { items: ProfileData["educations"] }
         </li>
       ))}
     </ul>
+  );
+}
+
+export function ExperienceSection({ items }: { items: ProfileData["experiences"] }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <div className="space-y-6">
+      <ul className="space-y-10 list-none p-0 m-0">
+        {items.map((item, i) => (
+          <li key={i} className="relative group">
+             <div className="w-full">
+               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 mb-2">
+                 <h3 className="text-xl font-bold text-[var(--foreground)] leading-snug">
+                   {item.link ? (
+                     <a href={item.link} target="_blank" rel="noreferrer" className="hover:text-[var(--accent)] hover:underline">
+                       {item.organization} ↗
+                     </a>
+                   ) : (
+                     item.organization
+                   )}
+                 </h3>
+                 <span className="text-sm font-semibold text-[var(--text-muted)] whitespace-nowrap bg-zinc-100 dark:bg-zinc-800/50 px-2 py-0.5 rounded-md border border-[var(--border)] shrink-0 mt-1 sm:mt-0">
+                   {item.date}
+                 </span>
+               </div>
+               <p className="text-sm font-medium text-[var(--text-muted)] mb-4">{item.role}</p>
+               {item.description && (
+                 <p className="text-sm text-[var(--foreground)] leading-relaxed bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-[var(--border)] shadow-sm whitespace-pre-line">
+                   {item.description}
+                 </p>
+               )}
+             </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

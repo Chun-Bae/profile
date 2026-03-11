@@ -27,6 +27,7 @@ export interface PortfolioItem {
   github?: string;
   technologies: string[];
   date: string;
+  mdFile?: string;
 }
 
 export interface Certification {
@@ -67,6 +68,17 @@ export interface Education {
   logoUrl?: string;
 }
 
+export interface Experience {
+  organization: string;
+  role: string;
+  date: string;
+  description?: string;
+  link?: string;
+}
+
+// Club has the same structure as Experience
+export type Club = Experience;
+
 export interface ProfileData {
   intro: Intro;
   techStack: TechStackCategory[];
@@ -76,4 +88,6 @@ export interface ProfileData {
   englishScores: EnglishScore[];
   awards?: Award[];
   educations?: Education[];
+  experiences?: Experience[];
+  clubs?: Club[];
 }
