@@ -188,7 +188,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
       </button>
 
       {/* Top Controls: Theme & Language */}
-      <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-20 flex items-center gap-3">
+      <div className="fixed top-4 sm:top-8 right-4 sm:right-8 z-50 flex items-center gap-3">
         {/* Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -216,6 +216,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         >
           EN
         </button>
+        </div>
       </div>
 
       {/* Password Prompt Modal */}
