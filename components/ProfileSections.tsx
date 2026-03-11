@@ -289,7 +289,7 @@ export function ExperienceSection({ items }: { items: ProfileData["experiences"]
                    {item.date}
                  </span>
                </div>
-               <p className="text-base font-semibold text-[var(--accent)] mb-4">{item.role}</p>
+               <p className="text-sm font-medium text-[var(--text-muted)] mb-4">{item.role}</p>
                {item.description && (
                  <p className="text-sm text-[var(--foreground)] leading-relaxed bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-[var(--border)] shadow-sm whitespace-pre-line">
                    {item.description}
