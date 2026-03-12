@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateProfile, checkPassword, uploadImage } from '@/app/actions'
 import { ProfileData } from '@/types/profile'
-import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection, EducationSection, ExperienceSection } from './ProfileSections'
+import { IntroSection, TechStackSection, PortfolioSection, ListSection, AwardSection, EducationSection, ExperienceSection, RolePortfolioSection } from './ProfileSections'
 import ProjectDetailPanel from './ProjectDetailPanel'
 import { PortfolioItem } from '@/types/profile'
 import { useTheme } from 'next-themes'
@@ -14,10 +14,10 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const [currentLang, setCurrentLang] = useState<'ko' | 'en'>('ko')
   const [profileKO, setProfileKO] = useState<ProfileData>(initialProfileKO)
   const [profileEN, setProfileEN] = useState<ProfileData>(initialProfileEN)
-  
+
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -26,20 +26,20 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const setProfile = currentLang === 'ko' ? setProfileKO : setProfileEN
 
   const [isGlobalEditMode, setIsGlobalEditMode] = useState(false)
-  
+
   const [editingSection, setEditingSection] = useState<string | null>(null)
   const [introData, setIntroData] = useState(profile.intro)
   const [jsonText, setJsonText] = useState("")
-  
+
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
   const [passwordError, setPasswordError] = useState(false)
   const [isVerifying, setIsVerifying] = useState(false)
-  
+
   const [activeSection, setActiveSection] = useState<string>('intro')
 
   // Lifted state for Portfolio Expand/Collapse All
-  const [expandedPortfolioIndices, setExpandedPortfolioIndices] = useState<number[]>([0]);
+  const [expandedPortfolioIndices, setExpandedPortfolioIndices] = useState<number[]>([]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -53,11 +53,11 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
       },
       { rootMargin: "-20% 0px -60% 0px" }
     );
-    
+
     // Select all our profile sections
     const sections = document.querySelectorAll('main > div[id]');
     sections.forEach((section) => observer.observe(section));
-    
+
     return () => observer.disconnect();
   }, [mounted, profile]);
 
@@ -94,7 +94,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'banner' | 'generic') => {
     if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
-    
+
     if (type === 'avatar') setIsUploadingAvatar(true);
     else if (type === 'banner') setIsUploadingBanner(true);
     else setIsUploadingAsset(true);
@@ -107,7 +107,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
     let filename = file.name;
     if (type === 'avatar') filename = 'profile_img.jpeg';
     else if (type === 'banner') filename = 'profile_img_banner.jpg';
-    
+
     // URL-safe filename
     const safeFilename = encodeURIComponent(filename.replace(/\s+/g, '_'));
     formData.append('filename', safeFilename);
@@ -133,17 +133,17 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
 
       const baseUrl = res.url || '';
       if (baseUrl) {
-         const newUrl = baseUrl + '?t=' + Date.now();
-         const updatedProfile = {
-           ...profile,
-           intro: { ...profile.intro, [type + 'Url']: newUrl }
-         };
-         const saveResForm = new FormData();
-         saveResForm.append('profileData', JSON.stringify(updatedProfile));
-         saveResForm.append('lang', currentLang);
-         await updateProfile(null, saveResForm);
-         setProfile(updatedProfile);
-         setIntroData(updatedProfile.intro);
+        const newUrl = baseUrl + '?t=' + Date.now();
+        const updatedProfile = {
+          ...profile,
+          intro: { ...profile.intro, [type + 'Url']: newUrl }
+        };
+        const saveResForm = new FormData();
+        saveResForm.append('profileData', JSON.stringify(updatedProfile));
+        saveResForm.append('lang', currentLang);
+        await updateProfile(null, saveResForm);
+        setProfile(updatedProfile);
+        setIntroData(updatedProfile.intro);
       }
       alert(`성공적으로 업로드되었습니다!`);
       router.refresh();
@@ -180,13 +180,13 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
 
     const newProfile = { ...profile, [section]: updatedSectionData }
     setProfile(newProfile)
-    
+
     startTransition(async () => {
       const formData = new FormData()
       formData.append('profileData', JSON.stringify(newProfile))
       formData.append('lang', currentLang)
       const res = await updateProfile(null, formData)
-      
+
       if (res?.error) {
         alert("저장 실패: " + res.error)
         // Revert optimistic update
@@ -200,7 +200,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const EditButton = ({ onClick }: { onClick: () => void }) => {
     if (!isGlobalEditMode) return null;
     return (
-      <button 
+      <button
         onClick={onClick}
         className="absolute top-2 right-2 text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-110 transition-transform z-10"
         title="Edit Section"
@@ -226,20 +226,19 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   return (
     <>
       {/* Global Edit Mode Toggle */}
-      <button 
+      <button
         onClick={handleToggleClick}
-        className={`fixed bottom-6 right-6 p-3 rounded-full shadow-xl transition-all z-20 hover:scale-105 active:scale-95 ${
-          isGlobalEditMode 
-            ? 'bg-amber-500 text-white border border-amber-400' 
-            : 'bg-zinc-900 dark:bg-zinc-100 text-[var(--background)] border border-[var(--border)]'
-        }`}
+        className={`fixed bottom-6 right-6 p-3 rounded-full shadow-xl transition-all z-20 hover:scale-105 active:scale-95 ${isGlobalEditMode
+          ? 'bg-amber-500 text-white border border-amber-400'
+          : 'bg-zinc-900 dark:bg-zinc-100 text-[var(--background)] border border-[var(--border)]'
+          }`}
         title="Toggle Edit Mode"
         aria-label="Toggle Edit Mode"
       >
         {isGlobalEditMode ? (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
         ) : (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
         )}
       </button>
 
@@ -247,9 +246,9 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
       {isGlobalEditMode && (
         <label className="fixed bottom-20 right-6 p-3 rounded-full shadow-xl transition-all z-20 hover:scale-105 active:scale-95 bg-blue-500 text-white border border-blue-400 cursor-pointer" title="Upload Generic Asset (e.g. Patent Image)">
           {isUploadingAsset ? (
-            <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
           ) : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
           )}
           <input type="file" className="hidden" accept="image/*,.pdf,.md,.txt" onChange={(e) => handleUpload(e, 'generic')} />
         </label>
@@ -272,18 +271,18 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
 
         {/* Language Toggle */}
         <div className="flex bg-[var(--background)] border border-[var(--border)] rounded-lg overflow-hidden shadow-sm">
-        <button 
-          onClick={() => { setCurrentLang('ko'); setEditingSection(null); }}
-          className={`px-4 py-2 text-sm font-bold transition-colors ${currentLang === 'ko' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--text-muted)] hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          KR
-        </button>
-        <button 
-          onClick={() => { setCurrentLang('en'); setEditingSection(null); }}
-          className={`px-4 py-2 text-sm font-bold transition-colors ${currentLang === 'en' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--text-muted)] hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          EN
-        </button>
+          <button
+            onClick={() => { setCurrentLang('ko'); setEditingSection(null); }}
+            className={`px-4 py-2 text-sm font-bold transition-colors ${currentLang === 'ko' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--text-muted)] hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+          >
+            KR
+          </button>
+          <button
+            onClick={() => { setCurrentLang('en'); setEditingSection(null); }}
+            className={`px-4 py-2 text-sm font-bold transition-colors ${currentLang === 'en' ? 'bg-[var(--foreground)] text-[var(--background)]' : 'text-[var(--text-muted)] hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
+          >
+            EN
+          </button>
         </div>
       </div>
 
@@ -296,8 +295,8 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               Enter Password
             </h2>
             <div className="space-y-4">
-              <input 
-                type="password" 
+              <input
+                type="password"
                 autoFocus
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
@@ -308,15 +307,15 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                 <p className="text-red-500 text-xs font-semibold">Incorrect password</p>
               )}
               <div className="flex justify-end gap-3 pt-2">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowPasswordPrompt(false)}
                   className="px-4 py-2 text-sm bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isVerifying || !passwordInput}
                   className="px-4 py-2 text-sm bg-[var(--foreground)] text-[var(--background)] font-bold rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
@@ -334,8 +333,10 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             {[
               { id: 'intro', ko: '소개', en: 'Intro' },
               { id: 'techStack', ko: '기술 스택', en: 'Skills' },
+              { id: 'rolePortfolio', ko: '포트폴리오', en: 'Portfolio by Role' },
               { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
               { id: 'experiences', ko: '대외활동', en: 'Activities' },
+              { id: 'openSources', ko: '오픈소스', en: 'Open Source' },
               { id: 'clubs', ko: '동아리', en: 'Clubs' },
               { id: 'awards', ko: '수상/대회', en: 'Awards' },
               { id: 'certifications', ko: '자격증', en: 'Certifications' },
@@ -343,9 +344,9 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
               { id: 'educations', ko: '학력', en: 'Education' },
             ].map((item) => (
-              <a 
-                key={item.id} 
-                href={`#${item.id}`} 
+              <a
+                key={item.id}
+                href={`#${item.id}`}
                 className={`transition-all text-right ${activeSection === item.id ? 'text-[var(--foreground)] -translate-x-1 font-bold' : 'hover:text-[var(--foreground)] hover:-translate-x-1'}`}
               >
                 {currentLang === 'ko' ? item.ko : item.en}
@@ -355,321 +356,382 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
         </aside>
 
         <main className="w-full min-w-0 py-16 sm:py-24 space-y-16">
-          
+
           {/* Intro */}
           <div className="relative group scroll-mt-24" id="intro">
-          {editingSection === 'intro' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-4">Edit Intro</h3>
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <div><label className="text-xs text-[var(--text-muted)]">Name</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.name} onChange={e=>setIntroData({...introData, name: e.target.value})}/></div>
-                 <div><label className="text-xs text-[var(--text-muted)]">Role</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.role} onChange={e=>setIntroData({...introData, role: e.target.value})}/></div>
-                 <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Summary</label><textarea rows={3} className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.summary} onChange={e=>setIntroData({...introData, summary: e.target.value})}/></div>
-                 <div><label className="text-xs text-[var(--text-muted)]">Email</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.email} onChange={e=>setIntroData({...introData, email: e.target.value})}/></div>
-                 <div><label className="text-xs text-[var(--text-muted)]">Phone</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.phone || ''} onChange={e=>setIntroData({...introData, phone: e.target.value})}/></div>
-                 <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Location</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.location || ''} onChange={e=>setIntroData({...introData, location: e.target.value})}/></div>
-                 <div className="sm:col-span-2">
-                   <label className="text-xs text-[var(--text-muted)] block mb-1">Avatar Image</label>
-                   <label className="cursor-pointer inline-flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
-                     {isUploadingAvatar ? <span className="animate-pulse">Uploading...</span> : 'Upload New Avatar 📤'}
-                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'avatar')} />
-                   </label>
-                 </div>
-                 <div className="sm:col-span-2">
-                   <label className="text-xs text-[var(--text-muted)] block mb-1">Banner Image</label>
-                   <label className="cursor-pointer inline-flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
-                     {isUploadingBanner ? <span className="animate-pulse">Uploading...</span> : 'Upload New Banner 📤'}
-                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'banner')} />
-                   </label>
-                 </div>
-                 
-                 <div className="sm:col-span-2 mt-4 border-b border-[var(--border)] pb-2"><h4 className="text-sm font-bold">Socials</h4></div>
-                 <div><label className="text-xs text-[var(--text-muted)]">GitHub</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.github || ''} onChange={e=>setIntroData({...introData, socials: {...introData.socials, github: e.target.value}})}/></div>
-                 <div><label className="text-xs text-[var(--text-muted)]">LinkedIn</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.linkedin || ''} onChange={e=>setIntroData({...introData, socials: {...introData.socials, linkedin: e.target.value}})}/></div>
-                 <div><label className="text-xs text-[var(--text-muted)]">Blog</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.blog || ''} onChange={e=>setIntroData({...introData, socials: {...introData.socials, blog: e.target.value}})}/></div>
+            {editingSection === 'intro' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-4">Edit Intro</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div><label className="text-xs text-[var(--text-muted)]">Name</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.name} onChange={e => setIntroData({ ...introData, name: e.target.value })} /></div>
+                  <div><label className="text-xs text-[var(--text-muted)]">Role</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.role} onChange={e => setIntroData({ ...introData, role: e.target.value })} /></div>
+                  <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Summary</label><textarea rows={3} className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.summary} onChange={e => setIntroData({ ...introData, summary: e.target.value })} /></div>
+                  <div><label className="text-xs text-[var(--text-muted)]">Email</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.email} onChange={e => setIntroData({ ...introData, email: e.target.value })} /></div>
+                  <div><label className="text-xs text-[var(--text-muted)]">Phone</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.phone || ''} onChange={e => setIntroData({ ...introData, phone: e.target.value })} /></div>
+                  <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Location</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.location || ''} onChange={e => setIntroData({ ...introData, location: e.target.value })} /></div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs text-[var(--text-muted)] block mb-1">Avatar Image</label>
+                    <label className="cursor-pointer inline-flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
+                      {isUploadingAvatar ? <span className="animate-pulse">Uploading...</span> : 'Upload New Avatar 📤'}
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'avatar')} />
+                    </label>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs text-[var(--text-muted)] block mb-1">Banner Image</label>
+                    <label className="cursor-pointer inline-flex items-center justify-center border border-[var(--border)] rounded px-4 py-2 text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
+                      {isUploadingBanner ? <span className="animate-pulse">Uploading...</span> : 'Upload New Banner 📤'}
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload(e, 'banner')} />
+                    </label>
+                  </div>
 
-                 <div className="sm:col-span-2 mt-4 border-b border-[var(--border)] pb-2"><h4 className="text-sm font-bold">Motto</h4></div>
-                 <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Motto Statement</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none italic" value={introData.motto || ''} onChange={e=>setIntroData({...introData, motto: e.target.value})} placeholder="e.g. Keep moving forward..."/></div>
-               </div>
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('intro')} />
-            </div>
-          ) : (
-            <>
-              <IntroSection intro={profile.intro} />
-              <EditButton onClick={() => startEdit('intro', profile.intro)} />
-            </>
-          )}
-        </div>
+                  <div className="sm:col-span-2 mt-4 border-b border-[var(--border)] pb-2"><h4 className="text-sm font-bold">Socials</h4></div>
+                  <div><label className="text-xs text-[var(--text-muted)]">GitHub</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.github || ''} onChange={e => setIntroData({ ...introData, socials: { ...introData.socials, github: e.target.value } })} /></div>
+                  <div><label className="text-xs text-[var(--text-muted)]">LinkedIn</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.linkedin || ''} onChange={e => setIntroData({ ...introData, socials: { ...introData.socials, linkedin: e.target.value } })} /></div>
+                  <div><label className="text-xs text-[var(--text-muted)]">Blog</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none" value={introData.socials?.blog || ''} onChange={e => setIntroData({ ...introData, socials: { ...introData.socials, blog: e.target.value } })} /></div>
 
-        {/* Tech Stack */}
-        <div className="relative group scroll-mt-24" id="techStack">
-          {editingSection === 'techStack' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Technical Skills (JSON array)</h3>
-               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('techStack')} />
-            </div>
-          ) : (
-            (profile.techStack?.length > 0 || isGlobalEditMode) && (
-              <div className="space-y-8">
-                <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  {currentLang === 'ko' ? '기술 스택' : 'Technical Skills'}
-                  <EditButton onClick={() => startEdit('techStack', profile.techStack || [])} />
-                </h2>
-                {profile.techStack?.length > 0 ? (
-                  <TechStackSection stack={profile.techStack} />
-                ) : (
-                  <p className="text-sm text-[var(--text-muted)] italic">No skills added yet.</p>
-                )}
+                  <div className="sm:col-span-2 mt-4 border-b border-[var(--border)] pb-2"><h4 className="text-sm font-bold">Motto</h4></div>
+                  <div className="sm:col-span-2"><label className="text-xs text-[var(--text-muted)]">Motto Statement</label><input className="w-full border border-[var(--border)] rounded px-3 py-2 text-sm bg-white dark:bg-zinc-950 outline-none italic" value={introData.motto || ''} onChange={e => setIntroData({ ...introData, motto: e.target.value })} placeholder="e.g. Keep moving forward..." /></div>
+                </div>
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('intro')} />
               </div>
-            )
-          )}
-        </div>
+            ) : (
+              <>
+                <IntroSection intro={profile.intro} />
+                <EditButton onClick={() => startEdit('intro', profile.intro)} />
+              </>
+            )}
+          </div>
 
-        {/* Portfolio */}
-        <div className="relative group mt-16 scroll-mt-24" id="portfolio">
-          {editingSection === 'portfolio' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Projects (JSON array)</h3>
-               <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('portfolio')} />
-            </div>
-          ) : (
-            (profile.portfolio?.length > 0 || isGlobalEditMode) && (
-              <div className="space-y-8">
-                <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-2 relative gap-4 pr-10">
-                  <h2 className="text-2xl font-bold tracking-tight">
-                    {currentLang === 'ko' ? '프로젝트' : 'Projects'}
-                    <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
+          {/* Tech Stack */}
+          <div className="relative group scroll-mt-24" id="techStack">
+            {editingSection === 'techStack' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Technical Skills (JSON array)</h3>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('techStack')} />
+              </div>
+            ) : (
+              (profile.techStack?.length > 0 || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '기술 스택' : 'Technical Skills'}
+                    <EditButton onClick={() => startEdit('techStack', profile.techStack || [])} />
                   </h2>
-                  {profile.portfolio?.length > 0 && (
-                    <button
-                      onClick={() => {
-                        if (expandedPortfolioIndices.length === profile.portfolio.length) {
-                          setExpandedPortfolioIndices([]);
-                        } else {
-                          setExpandedPortfolioIndices(profile.portfolio.map((_, i) => i));
-                        }
-                      }}
-                      className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none"
-                    >
-                      <svg
-                        className={`w-4 h-4 transition-transform duration-300 ${expandedPortfolioIndices.length === profile.portfolio.length ? 'rotate-180' : ''}`}
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                      {expandedPortfolioIndices.length === profile.portfolio.length 
-                        ? (currentLang === 'ko' ? '전체 접기' : 'Collapse All') 
-                        : (currentLang === 'ko' ? '전체 펼치기' : 'Expand All')}
-                    </button>
+                  {profile.techStack?.length > 0 ? (
+                    <TechStackSection stack={profile.techStack} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No skills added yet.</p>
                   )}
                 </div>
-                {profile.portfolio?.length > 0 ? (
-                  <PortfolioSection 
-                    items={profile.portfolio} 
-                    onDetail={setSelectedProject} 
-                    lang={currentLang} 
-                    expandedIndices={expandedPortfolioIndices}
-                    onToggleExpand={(index) => {
-                      setExpandedPortfolioIndices(prev => 
-                        prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
-                      );
-                    }}
-                  />
-                ) : (
-                  <p className="text-sm text-[var(--text-muted)] italic">No projects added yet.</p>
-                )}
-              </div>
-            )
-          )}
-        </div>
+              )
+            )}
+          </div>
 
-        {/* Experience */}
-        <div className="relative group mt-16 scroll-mt-24" id="experiences">
-          {editingSection === 'experiences' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Experiences (JSON array)</h3>
-               <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('experiences')} />
-            </div>
-          ) : (
-            ((profile.experiences && profile.experiences.length > 0) || isGlobalEditMode) && (
+          {/* Role Portfolio */}
+          <div className="relative group mt-16 scroll-mt-24" id="rolePortfolio">
+            {editingSection === 'rolePortfolio' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Portfolio by Role (JSON array)</h3>
+                <p className="text-xs text-[var(--text-muted)] mb-3">Fields: title, subtitle (optional), description (optional), link (optional — ppt/pdf/url)</p>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('rolePortfolio')} />
+              </div>
+            ) : (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  {currentLang === 'ko' ? '대외활동' : 'Activities'}
-                  <EditButton onClick={() => startEdit('experiences', profile.experiences || [])} />
+                  {currentLang === 'ko' ? '포트폴리오' : 'Portfolio by Role'}
+                  <EditButton onClick={() => startEdit('rolePortfolio', profile.rolePortfolio ?? [])} />
                 </h2>
-                {profile.experiences && profile.experiences.length > 0 ? (
-                  <ExperienceSection items={profile.experiences} />
-                ) : (
-                  <p className="text-sm text-[var(--text-muted)] italic">No experiences added yet.</p>
-                )}
+                <RolePortfolioSection items={profile.rolePortfolio && profile.rolePortfolio.length > 0 ? profile.rolePortfolio : [
+                  { title: 'MLOps Engineer', subtitle: 'AI/ML 파이프라인 & 인프라 구축', description: 'ML 모델 학습 자동화, 배포 파이프라인 및 모니터링 시스템 설계·운영' },
+                  { title: 'Frontend Developer', subtitle: 'React & Next.js UI/UX 개발', description: '사용자 중심의 반응형 웹 인터페이스 설계 및 구현' },
+                  { title: 'Backend Developer', subtitle: 'API 설계 & 서버 아키텍처', description: '확장 가능한 REST API 및 서버사이드 로직 설계·개발' },
+                  { title: 'Full Stack Developer', subtitle: '풀스택 웹 애플리케이션 개발', description: '프론트엔드부터 백엔드까지 전 과정을 아우르는 개발 경험' },
+                ]} />
               </div>
-            )
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Clubs */}
-        <div className="relative group mt-16 scroll-mt-24" id="clubs">
-          {editingSection === 'clubs' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Clubs (JSON array)</h3>
-               <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('clubs')} />
-            </div>
-          ) : (
-            ((profile.clubs && profile.clubs.length > 0) || isGlobalEditMode) && (
-              <div className="space-y-8">
-                <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  {currentLang === 'ko' ? '동아리' : 'Clubs'}
-                  <EditButton onClick={() => startEdit('clubs', profile.clubs || [])} />
-                </h2>
-                {profile.clubs && profile.clubs.length > 0 ? (
-                  <ExperienceSection items={profile.clubs} />
-                ) : (
-                  <p className="text-sm text-[var(--text-muted)] italic">No clubs added yet.</p>
-                )}
+          {/* Portfolio */}
+          <div className="relative group mt-16 scroll-mt-24" id="portfolio">
+            {editingSection === 'portfolio' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Projects (JSON array)</h3>
+                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('portfolio')} />
               </div>
-            )
-          )}
-        </div>
+            ) : (
+              (profile.portfolio?.length > 0 || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-2 relative gap-4 pr-10">
+                    <h2 className="text-2xl font-bold tracking-tight">
+                      {currentLang === 'ko' ? '프로젝트' : 'Projects'}
+                      <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
+                    </h2>
+                    {profile.portfolio?.length > 0 && (
+                      <button
+                        onClick={() => {
+                          if (expandedPortfolioIndices.length === profile.portfolio.length) {
+                            setExpandedPortfolioIndices([]);
+                          } else {
+                            setExpandedPortfolioIndices(profile.portfolio.map((_, i) => i));
+                          }
+                        }}
+                        className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none"
+                      >
+                        <svg
+                          className={`w-4 h-4 transition-transform duration-300 ${expandedPortfolioIndices.length === profile.portfolio.length ? 'rotate-180' : ''}`}
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                        {expandedPortfolioIndices.length === profile.portfolio.length
+                          ? (currentLang === 'ko' ? '전체 접기' : 'Collapse All')
+                          : (currentLang === 'ko' ? '전체 펼치기' : 'Expand All')}
+                      </button>
+                    )}
+                  </div>
+                  {profile.portfolio?.length > 0 ? (
+                    <PortfolioSection
+                      items={profile.portfolio}
+                      onDetail={setSelectedProject}
+                      lang={currentLang}
+                      expandedIndices={expandedPortfolioIndices}
+                      onToggleExpand={(index) => {
+                        setExpandedPortfolioIndices(prev =>
+                          prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+                        );
+                      }}
+                    />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No projects added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
 
-        {/* Awards/Competitions */}
-        <div className="relative group mt-16 scroll-mt-24" id="awards">
-          {editingSection === 'awards' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Awards/Competitions (JSON array)</h3>
-               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('awards')} />
-            </div>
-          ) : (
-            ((profile.awards && profile.awards.length > 0) || isGlobalEditMode) && (
-              <div className="space-y-8">
-                <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  {currentLang === 'ko' ? '수상 및 대회' : 'Awards & Competitions'}
-                  <EditButton onClick={() => startEdit('awards', profile.awards || [])} />
-                </h2>
-                {profile.awards && profile.awards.length > 0 ? (
-                  <AwardSection items={profile.awards} />
-                ) : (
-                  <p className="text-sm text-[var(--text-muted)] italic">No awards or competitions added yet.</p>
-                )}
+          {/* Experience */}
+          <div className="relative group mt-16 scroll-mt-24" id="experiences">
+            {editingSection === 'experiences' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Experiences (JSON array)</h3>
+                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('experiences')} />
               </div>
-            )
-          )}
-        </div>
-        {/* Certifications */}
-        <div className="relative group mt-16 scroll-mt-24" id="certifications">
-          {editingSection === 'certifications' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Certifications (JSON array)</h3>
-               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('certifications')} />
-            </div>
-          ) : (
-            (formattedCertifications.length > 0 || isGlobalEditMode) && (
-              <div className="space-y-8">
-                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   {currentLang === 'ko' ? '자격증' : 'Certifications'}
-                   <EditButton onClick={() => startEdit('certifications', profile.certifications || [])} />
-                 </h2>
-                 {formattedCertifications.length > 0 ? (
-                   <ListSection items={formattedCertifications} lang={currentLang} />
-                 ) : (
-                   <p className="text-sm text-[var(--text-muted)] italic">No certifications added yet.</p>
-                 )}
-              </div>
-            )
-          )}
-        </div>
-        
-        {/* Patents */}
-        <div className="relative group mt-16 scroll-mt-24" id="patents">
-          {editingSection === 'patents' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Patents (JSON array)</h3>
-               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('patents')} />
-            </div>
-          ) : (
-            (formattedPatents.length > 0 || isGlobalEditMode) && (
-              <div className="space-y-8">
-                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   {currentLang === 'ko' ? '특허 및 등록증' : 'Patents & Registrations'}
-                   <EditButton onClick={() => startEdit('patents', profile.patents || [])} />
-                 </h2>
-                 {formattedPatents.length > 0 ? (
-                   <ListSection items={formattedPatents} />
-                 ) : (
-                   <p className="text-sm text-[var(--text-muted)] italic">No patents added yet.</p>
-                 )}
-              </div>
-            )
-          )}
-        </div>
+            ) : (
+              ((profile.experiences && profile.experiences.length > 0) || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '대외활동' : 'Activities'}
+                    <EditButton onClick={() => startEdit('experiences', profile.experiences || [])} />
+                  </h2>
+                  {profile.experiences && profile.experiences.length > 0 ? (
+                    <ExperienceSection items={profile.experiences} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No experiences added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
 
-        {/* Language Scores */}
-        <div className="relative group mt-16 scroll-mt-24" id="englishScores">
-          {editingSection === 'englishScores' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Language Scores (JSON array)</h3>
-               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('englishScores')} />
-            </div>
-          ) : (
-            (formattedEnglishScores.length > 0 || isGlobalEditMode) && (
-              <div className="space-y-8">
-                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   {currentLang === 'ko' ? '어학 점수' : 'Language Scores'}
-                   <EditButton onClick={() => startEdit('englishScores', profile.englishScores || [])} />
-                 </h2>
-                 {formattedEnglishScores.length > 0 ? (
-                   <ListSection items={formattedEnglishScores} />
-                 ) : (
-                   <p className="text-sm text-[var(--text-muted)] italic">No language scores added yet.</p>
-                 )}
+          {/* Open Source */}
+          <div className="relative group mt-16 scroll-mt-24" id="openSources">
+            {editingSection === 'openSources' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Open Source (JSON array)</h3>
+                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('openSources')} />
               </div>
-            )
-          )}
-        </div>
+            ) : (
+              ((profile.openSources && profile.openSources.length > 0) || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '오픈소스' : 'Open Source'}
+                    <EditButton onClick={() => startEdit('openSources', profile.openSources || [])} />
+                  </h2>
+                  {profile.openSources && profile.openSources.length > 0 ? (
+                    <ExperienceSection items={profile.openSources} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No open source projects added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
 
-        {/* Education */}
-        <div className="relative group mt-16 scroll-mt-24" id="educations">
-          {editingSection === 'educations' ? (
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-               <h3 className="text-lg font-bold mb-2">Edit Education (JSON array)</h3>
-               <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-               <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('educations')} />
-            </div>
-          ) : (
-            ((profile.educations && profile.educations.length > 0) || isGlobalEditMode) && (
-              <div className="space-y-8">
-                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                   {currentLang === 'ko' ? '학력' : 'Education'}
-                   <EditButton onClick={() => startEdit('educations', profile.educations || [])} />
-                 </h2>
-                 {profile.educations && profile.educations.length > 0 ? (
-                   <EducationSection items={profile.educations} lang={currentLang} />
-                 ) : (
-                   <p className="text-sm text-[var(--text-muted)] italic">No education added yet.</p>
-                 )}
+          {/* Clubs */}
+          <div className="relative group mt-16 scroll-mt-24" id="clubs">
+            {editingSection === 'clubs' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Clubs (JSON array)</h3>
+                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('clubs')} />
               </div>
-            )
-          )}
-        </div>
+            ) : (
+              ((profile.clubs && profile.clubs.length > 0) || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '동아리' : 'Clubs'}
+                    <EditButton onClick={() => startEdit('clubs', profile.clubs || [])} />
+                  </h2>
+                  {profile.clubs && profile.clubs.length > 0 ? (
+                    <ExperienceSection items={profile.clubs} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No clubs added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
 
-        {/* Footer */}
-        <footer className="pt-12 mt-24 border-t border-[var(--border)] text-[var(--text-muted)] text-sm flex flex-col items-center gap-2">
-           <p>Copyright © {new Date().getFullYear()} Chun-Bae. All rights reserved.</p>
-        </footer>
+          {/* Awards/Competitions */}
+          <div className="relative group mt-16 scroll-mt-24" id="awards">
+            {editingSection === 'awards' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Awards/Competitions (JSON array)</h3>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('awards')} />
+              </div>
+            ) : (
+              ((profile.awards && profile.awards.length > 0) || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '수상 및 대회' : 'Awards & Competitions'}
+                    <EditButton onClick={() => startEdit('awards', profile.awards || [])} />
+                  </h2>
+                  {profile.awards && profile.awards.length > 0 ? (
+                    <AwardSection items={profile.awards} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No awards or competitions added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+          {/* Certifications */}
+          <div className="relative group mt-16 scroll-mt-24" id="certifications">
+            {editingSection === 'certifications' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Certifications (JSON array)</h3>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('certifications')} />
+              </div>
+            ) : (
+              (formattedCertifications.length > 0 || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '자격증' : 'Certifications'}
+                    <EditButton onClick={() => startEdit('certifications', profile.certifications || [])} />
+                  </h2>
+                  {formattedCertifications.length > 0 ? (
+                    <ListSection items={formattedCertifications} lang={currentLang} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No certifications added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Patents */}
+          <div className="relative group mt-16 scroll-mt-24" id="patents">
+            {editingSection === 'patents' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Patents (JSON array)</h3>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('patents')} />
+              </div>
+            ) : (
+              (formattedPatents.length > 0 || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '특허 및 등록증' : 'Patents & Registrations'}
+                    <EditButton onClick={() => startEdit('patents', profile.patents || [])} />
+                  </h2>
+                  {formattedPatents.length > 0 ? (
+                    <ListSection items={formattedPatents} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No patents added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Language Scores */}
+          <div className="relative group mt-16 scroll-mt-24" id="englishScores">
+            {editingSection === 'englishScores' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Language Scores (JSON array)</h3>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('englishScores')} />
+              </div>
+            ) : (
+              (formattedEnglishScores.length > 0 || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '어학 점수' : 'Language Scores'}
+                    <EditButton onClick={() => startEdit('englishScores', profile.englishScores || [])} />
+                  </h2>
+                  {formattedEnglishScores.length > 0 ? (
+                    <ListSection items={formattedEnglishScores} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No language scores added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Education */}
+          <div className="relative group mt-16 scroll-mt-24" id="educations">
+            {editingSection === 'educations' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Education (JSON array)</h3>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('educations')} />
+              </div>
+            ) : (
+              ((profile.educations && profile.educations.length > 0) || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '학력' : 'Education'}
+                    <EditButton onClick={() => startEdit('educations', profile.educations || [])} />
+                  </h2>
+                  {profile.educations && profile.educations.length > 0 ? (
+                    <EducationSection items={profile.educations} lang={currentLang} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No education added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Footer */}
+          <footer className="pt-12 mt-24 border-t border-[var(--border)] text-[var(--text-muted)] text-sm flex flex-col items-center gap-3">
+            <a
+              href="https://github.com/Chun-Bae/profile"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 hover:text-[var(--foreground)] transition-colors group"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+              <span className="group-hover:underline">Free to use this template.</span>
+            </a>
+            <p>Copyright © {new Date().getFullYear()} Chun-Bae. All rights reserved.</p>
+          </footer>
         </main>
       </div>
 
-    <ProjectDetailPanel
-      item={selectedProject}
-      onClose={() => setSelectedProject(null)}
-    />
-  </>
+      <ProjectDetailPanel
+        item={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
+    </>
   )
 }
