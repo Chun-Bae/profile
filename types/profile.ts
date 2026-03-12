@@ -87,6 +87,13 @@ export interface Experience {
 // Club has the same structure as Experience
 export type Club = Experience;
 
+export interface RolePortfolioItem {
+  title: string;
+  subtitle?: string;
+  description?: string;
+  link?: string;
+}
+
 export interface ProfileData {
   intro: Intro;
   techStack: TechStackCategory[];
@@ -96,6 +103,8 @@ export interface ProfileData {
   englishScores: EnglishScore[];
   awards?: Award[];
   educations?: Education[];
+  rolePortfolio?: RolePortfolioItem[];
   experiences?: Experience[];
+  openSources?: Experience[];
   clubs?: Club[];
 }

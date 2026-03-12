@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { ProfileData } from "@/types/profile";
+import { ProfileData, RolePortfolioItem } from "@/types/profile";
 
 export function IntroSection({ intro }: { intro: ProfileData["intro"] }) {
   return (
@@ -415,6 +415,91 @@ export function ExperienceSection({ items }: { items: ProfileData["experiences"]
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+export function RolePortfolioSection({ items }: { items: RolePortfolioItem[] }) {
+  const [current, setCurrent] = useState(0);
+  const total = items.length;
+
+  const prev = () => setCurrent(i => (i - 1 + total) % total);
+  const next = () => setCurrent(i => (i + 1) % total);
+
+  if (total === 0) return null;
+
+  const item = items[current];
+
+  return (
+    <div className="relative w-full">
+      {/* Carousel track */}
+      <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)]">
+        <div className="flex flex-col items-center justify-center text-center px-12 py-16 min-h-[220px] gap-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">
+            {current + 1} / {total}
+          </p>
+          <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--foreground)]">
+            {item.title}
+          </h3>
+          {item.subtitle && (
+            <p className="text-base font-medium text-[var(--text-muted)]">{item.subtitle}</p>
+          )}
+          {item.description && (
+            <p className="text-sm text-[var(--text-muted)] mt-2 max-w-md leading-relaxed">{item.description}</p>
+          )}
+          {item.link && (
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] hover:underline"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              View
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* Prev / Next */}
+      {total > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 p-2 rounded-full bg-[var(--background)] border border-[var(--border)] shadow-sm hover:shadow-md hover:scale-105 transition-all text-[var(--text-muted)] hover:text-[var(--foreground)]"
+            aria-label="Previous"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 p-2 rounded-full bg-[var(--background)] border border-[var(--border)] shadow-sm hover:shadow-md hover:scale-105 transition-all text-[var(--text-muted)] hover:text-[var(--foreground)]"
+            aria-label="Next"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </>
+      )}
+
+      {/* Dot indicators */}
+      {total > 1 && (
+        <div className="flex justify-center gap-1.5 mt-4">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`w-1.5 h-1.5 rounded-full transition-all ${i === current ? 'bg-[var(--foreground)] w-4' : 'bg-[var(--border)]'}`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
