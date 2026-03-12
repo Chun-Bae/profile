@@ -22,13 +22,13 @@ const baseUrl =
 
 export const metadata: Metadata = {
   metadataBase: baseUrl,
-  title: "AI Software Engineer - YuSeok Choung",
-  description: "YuSeok Choung | AI Software Engineer Profile",
+  title: "YuSeok Choung's Profile",
+  description: "YuSeok Choung | AI Software Engineer",
   openGraph: {
-    title: "AI Software Engineer - YuSeok Choung",
-    description: "YuSeok Choung | AI Software Engineer Profile",
+    title: "YuSeok Choung's Profile",
+    description: "YuSeok Choung | AI Software Engineer",
     url: baseUrl,
-    siteName: "AI Software Engineer - YuSeok Choung",
+    siteName: "YuSeok Choung's Profile",
     locale: "ko_KR",
     images: [
       {
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Software Engineer - YuSeok Choung",
-    description: "YuSeok Choung | AI Software Engineer Profile",
+    title: "YuSeok Choung's Profile",
+    description: "YuSeok Choung | AI Software Engineer",
     images: [`${process.env.OCI_BUCKET_READ_URL}og.png`],
   },
 };

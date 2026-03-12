@@ -40,6 +40,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
 
   // Lifted state for Portfolio Expand/Collapse All
   const [expandedPortfolioIndices, setExpandedPortfolioIndices] = useState<number[]>([]);
+  const [selectedBadge, setSelectedBadge] = useState<string>('all');
 
   useEffect(() => {
     if (!mounted) return;
@@ -197,12 +198,12 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
     })
   }
 
-  const EditButton = ({ onClick }: { onClick: () => void }) => {
+  const EditButton = ({ onClick, inline }: { onClick: () => void; inline?: boolean }) => {
     if (!isGlobalEditMode) return null;
     return (
       <button
         onClick={onClick}
-        className="absolute top-2 right-2 text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-110 transition-transform z-10"
+        className={`${inline ? '' : 'absolute top-2 right-2'} text-[var(--text-muted)] hover:text-[var(--accent)] hover:scale-110 transition-transform z-10`}
         title="Edit Section"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -333,16 +334,16 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             {[
               { id: 'intro', ko: '소개', en: 'Intro' },
               { id: 'techStack', ko: '기술 스택', en: 'Skills' },
-              { id: 'rolePortfolio', ko: '포트폴리오', en: 'Portfolio by Role' },
+              { id: 'rolePortfolio', ko: '포트폴리오', en: 'Portfolio' },
               { id: 'portfolio', ko: '프로젝트', en: 'Projects' },
-              { id: 'experiences', ko: '대외활동', en: 'Activities' },
-              { id: 'openSources', ko: '오픈소스', en: 'Open Source' },
-              { id: 'clubs', ko: '동아리', en: 'Clubs' },
               { id: 'awards', ko: '수상/대회', en: 'Awards' },
-              { id: 'certifications', ko: '자격증', en: 'Certifications' },
+              { id: 'experiences', ko: '대외활동', en: 'Experiences' },
               { id: 'patents', ko: '특허 및 등록증', en: 'Patents & Registrations' },
-              { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
+              { id: 'certifications', ko: '자격증', en: 'Certifications' },
+              { id: 'openSources', ko: '오픈소스', en: 'Open Source' },
               { id: 'educations', ko: '학력', en: 'Education' },
+              { id: 'clubs', ko: '동아리', en: 'Clubs' },
+              { id: 'englishScores', ko: '어학 점수', en: 'Language Scores' },
             ].map((item) => (
               <a
                 key={item.id}
@@ -403,7 +404,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           </div>
 
           {/* Tech Stack */}
-          <div className="relative group scroll-mt-24" id="techStack">
+          <div className="relative group mt-16 scroll-mt-24" id="techStack">
             {editingSection === 'techStack' ? (
               <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
                 <h3 className="text-lg font-bold mb-2">Edit Technical Skills (JSON array)</h3>
@@ -431,7 +432,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
           <div className="relative group mt-16 scroll-mt-24" id="rolePortfolio">
             {editingSection === 'rolePortfolio' ? (
               <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-                <h3 className="text-lg font-bold mb-2">Edit Portfolio by Role (JSON array)</h3>
+                <h3 className="text-lg font-bold mb-2">Edit Portfolio (JSON array)</h3>
                 <p className="text-xs text-[var(--text-muted)] mb-3">Fields: title, subtitle (optional), description (optional), link (optional — ppt/pdf/url)</p>
                 <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
                 <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('rolePortfolio')} />
@@ -439,7 +440,7 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             ) : (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                  {currentLang === 'ko' ? '포트폴리오' : 'Portfolio by Role'}
+                  {currentLang === 'ko' ? '포트폴리오' : 'Portfolio'}
                   <EditButton onClick={() => startEdit('rolePortfolio', profile.rolePortfolio ?? [])} />
                 </h2>
                 <RolePortfolioSection items={profile.rolePortfolio && profile.rolePortfolio.length > 0 ? profile.rolePortfolio : [
@@ -461,128 +462,77 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                 <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('portfolio')} />
               </div>
             ) : (
-              (profile.portfolio?.length > 0 || isGlobalEditMode) && (
-                <div className="space-y-8">
-                  <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-2 relative gap-4 pr-10">
-                    <h2 className="text-2xl font-bold tracking-tight">
-                      {currentLang === 'ko' ? '프로젝트' : 'Projects'}
-                      <EditButton onClick={() => startEdit('portfolio', profile.portfolio || [])} />
-                    </h2>
-                    {profile.portfolio?.length > 0 && (
-                      <button
-                        onClick={() => {
-                          if (expandedPortfolioIndices.length === profile.portfolio.length) {
-                            setExpandedPortfolioIndices([]);
-                          } else {
-                            setExpandedPortfolioIndices(profile.portfolio.map((_, i) => i));
-                          }
+              (profile.portfolio?.length > 0 || isGlobalEditMode) && (() => {
+                const allBadges = Array.from(new Set(
+                  profile.portfolio.flatMap(p => p.badges ?? [])
+                ));
+                const filteredPortfolio = selectedBadge === 'all'
+                  ? profile.portfolio
+                  : profile.portfolio.filter(p => p.badges?.includes(selectedBadge));
+                return (
+                  <div className="space-y-8">
+                    <div className="flex flex-wrap items-center justify-between border-b border-[var(--border)] pb-2 relative gap-4">
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-2xl font-bold tracking-tight">
+                          {currentLang === 'ko' ? '프로젝트' : 'Projects'}
+                        </h2>
+                        {allBadges.length > 0 && (
+                          <select
+                            value={selectedBadge}
+                            onChange={e => { setSelectedBadge(e.target.value); setExpandedPortfolioIndices([]); }}
+                            className="text-sm bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] cursor-pointer"
+                          >
+                            <option value="all">{currentLang === 'ko' ? '전체' : 'All'}</option>
+                            {allBadges.map(badge => (
+                              <option key={badge} value={badge}>{badge}</option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <EditButton inline onClick={() => startEdit('portfolio', profile.portfolio || [])} />
+                        {profile.portfolio?.length > 0 && (
+                          <button
+                            onClick={() => {
+                              if (expandedPortfolioIndices.length === filteredPortfolio.length) {
+                                setExpandedPortfolioIndices([]);
+                              } else {
+                                setExpandedPortfolioIndices(filteredPortfolio.map((_, i) => i));
+                              }
+                            }}
+                            className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none"
+                          >
+                            <svg
+                              className={`w-4 h-4 transition-transform duration-300 ${expandedPortfolioIndices.length === filteredPortfolio.length ? 'rotate-180' : ''}`}
+                              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                            {expandedPortfolioIndices.length === filteredPortfolio.length
+                              ? (currentLang === 'ko' ? '전체 접기' : 'Collapse All')
+                              : (currentLang === 'ko' ? '전체 펼치기' : 'Expand All')}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {filteredPortfolio.length > 0 ? (
+                      <PortfolioSection
+                        items={filteredPortfolio}
+                        onDetail={setSelectedProject}
+                        lang={currentLang}
+                        expandedIndices={expandedPortfolioIndices}
+                        onToggleExpand={(index) => {
+                          setExpandedPortfolioIndices(prev =>
+                            prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+                          );
                         }}
-                        className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none"
-                      >
-                        <svg
-                          className={`w-4 h-4 transition-transform duration-300 ${expandedPortfolioIndices.length === profile.portfolio.length ? 'rotate-180' : ''}`}
-                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                        {expandedPortfolioIndices.length === profile.portfolio.length
-                          ? (currentLang === 'ko' ? '전체 접기' : 'Collapse All')
-                          : (currentLang === 'ko' ? '전체 펼치기' : 'Expand All')}
-                      </button>
+                      />
+                    ) : (
+                      <p className="text-sm text-[var(--text-muted)] italic">{currentLang === 'ko' ? '해당 뱃지의 프로젝트가 없습니다.' : 'No projects with this badge.'}</p>
                     )}
                   </div>
-                  {profile.portfolio?.length > 0 ? (
-                    <PortfolioSection
-                      items={profile.portfolio}
-                      onDetail={setSelectedProject}
-                      lang={currentLang}
-                      expandedIndices={expandedPortfolioIndices}
-                      onToggleExpand={(index) => {
-                        setExpandedPortfolioIndices(prev =>
-                          prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
-                        );
-                      }}
-                    />
-                  ) : (
-                    <p className="text-sm text-[var(--text-muted)] italic">No projects added yet.</p>
-                  )}
-                </div>
-              )
-            )}
-          </div>
-
-          {/* Experience */}
-          <div className="relative group mt-16 scroll-mt-24" id="experiences">
-            {editingSection === 'experiences' ? (
-              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-                <h3 className="text-lg font-bold mb-2">Edit Experiences (JSON array)</h3>
-                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('experiences')} />
-              </div>
-            ) : (
-              ((profile.experiences && profile.experiences.length > 0) || isGlobalEditMode) && (
-                <div className="space-y-8">
-                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                    {currentLang === 'ko' ? '대외활동' : 'Activities'}
-                    <EditButton onClick={() => startEdit('experiences', profile.experiences || [])} />
-                  </h2>
-                  {profile.experiences && profile.experiences.length > 0 ? (
-                    <ExperienceSection items={profile.experiences} />
-                  ) : (
-                    <p className="text-sm text-[var(--text-muted)] italic">No experiences added yet.</p>
-                  )}
-                </div>
-              )
-            )}
-          </div>
-
-          {/* Open Source */}
-          <div className="relative group mt-16 scroll-mt-24" id="openSources">
-            {editingSection === 'openSources' ? (
-              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-                <h3 className="text-lg font-bold mb-2">Edit Open Source (JSON array)</h3>
-                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('openSources')} />
-              </div>
-            ) : (
-              ((profile.openSources && profile.openSources.length > 0) || isGlobalEditMode) && (
-                <div className="space-y-8">
-                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                    {currentLang === 'ko' ? '오픈소스' : 'Open Source'}
-                    <EditButton onClick={() => startEdit('openSources', profile.openSources || [])} />
-                  </h2>
-                  {profile.openSources && profile.openSources.length > 0 ? (
-                    <ExperienceSection items={profile.openSources} />
-                  ) : (
-                    <p className="text-sm text-[var(--text-muted)] italic">No open source projects added yet.</p>
-                  )}
-                </div>
-              )
-            )}
-          </div>
-
-          {/* Clubs */}
-          <div className="relative group mt-16 scroll-mt-24" id="clubs">
-            {editingSection === 'clubs' ? (
-              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-                <h3 className="text-lg font-bold mb-2">Edit Clubs (JSON array)</h3>
-                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('clubs')} />
-              </div>
-            ) : (
-              ((profile.clubs && profile.clubs.length > 0) || isGlobalEditMode) && (
-                <div className="space-y-8">
-                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                    {currentLang === 'ko' ? '동아리' : 'Clubs'}
-                    <EditButton onClick={() => startEdit('clubs', profile.clubs || [])} />
-                  </h2>
-                  {profile.clubs && profile.clubs.length > 0 ? (
-                    <ExperienceSection items={profile.clubs} />
-                  ) : (
-                    <p className="text-sm text-[var(--text-muted)] italic">No clubs added yet.</p>
-                  )}
-                </div>
-              )
+                );
+              })()
             )}
           </div>
 
@@ -610,25 +560,26 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
               )
             )}
           </div>
-          {/* Certifications */}
-          <div className="relative group mt-16 scroll-mt-24" id="certifications">
-            {editingSection === 'certifications' ? (
+
+          {/* Experiences */}
+          <div className="relative group mt-16 scroll-mt-24" id="experiences">
+            {editingSection === 'experiences' ? (
               <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-                <h3 className="text-lg font-bold mb-2">Edit Certifications (JSON array)</h3>
-                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('certifications')} />
+                <h3 className="text-lg font-bold mb-2">Edit Experiences (JSON array)</h3>
+                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('experiences')} />
               </div>
             ) : (
-              (formattedCertifications.length > 0 || isGlobalEditMode) && (
+              ((profile.experiences && profile.experiences.length > 0) || isGlobalEditMode) && (
                 <div className="space-y-8">
                   <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                    {currentLang === 'ko' ? '자격증' : 'Certifications'}
-                    <EditButton onClick={() => startEdit('certifications', profile.certifications || [])} />
+                    {currentLang === 'ko' ? '대외활동' : 'Experiences'}
+                    <EditButton onClick={() => startEdit('experiences', profile.experiences || [])} />
                   </h2>
-                  {formattedCertifications.length > 0 ? (
-                    <ListSection items={formattedCertifications} lang={currentLang} />
+                  {profile.experiences && profile.experiences.length > 0 ? (
+                    <ExperienceSection items={profile.experiences} />
                   ) : (
-                    <p className="text-sm text-[var(--text-muted)] italic">No certifications added yet.</p>
+                    <p className="text-sm text-[var(--text-muted)] italic">No experiences added yet.</p>
                   )}
                 </div>
               )
@@ -660,25 +611,50 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
             )}
           </div>
 
-          {/* Language Scores */}
-          <div className="relative group mt-16 scroll-mt-24" id="englishScores">
-            {editingSection === 'englishScores' ? (
+          {/* Certifications */}
+          <div className="relative group mt-16 scroll-mt-24" id="certifications">
+            {editingSection === 'certifications' ? (
               <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
-                <h3 className="text-lg font-bold mb-2">Edit Language Scores (JSON array)</h3>
+                <h3 className="text-lg font-bold mb-2">Edit Certifications (JSON array)</h3>
                 <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
-                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('englishScores')} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('certifications')} />
               </div>
             ) : (
-              (formattedEnglishScores.length > 0 || isGlobalEditMode) && (
+              (formattedCertifications.length > 0 || isGlobalEditMode) && (
                 <div className="space-y-8">
                   <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
-                    {currentLang === 'ko' ? '어학 점수' : 'Language Scores'}
-                    <EditButton onClick={() => startEdit('englishScores', profile.englishScores || [])} />
+                    {currentLang === 'ko' ? '자격증' : 'Certifications'}
+                    <EditButton onClick={() => startEdit('certifications', profile.certifications || [])} />
                   </h2>
-                  {formattedEnglishScores.length > 0 ? (
-                    <ListSection items={formattedEnglishScores} />
+                  {formattedCertifications.length > 0 ? (
+                    <ListSection items={formattedCertifications} lang={currentLang} />
                   ) : (
-                    <p className="text-sm text-[var(--text-muted)] italic">No language scores added yet.</p>
+                    <p className="text-sm text-[var(--text-muted)] italic">No certifications added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Open Source */}
+          <div className="relative group mt-16 scroll-mt-24" id="openSources">
+            {editingSection === 'openSources' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Open Source (JSON array)</h3>
+                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('openSources')} />
+              </div>
+            ) : (
+              ((profile.openSources && profile.openSources.length > 0) || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '오픈소스' : 'Open Source'}
+                    <EditButton onClick={() => startEdit('openSources', profile.openSources || [])} />
+                  </h2>
+                  {profile.openSources && profile.openSources.length > 0 ? (
+                    <ExperienceSection items={profile.openSources} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No open source projects added yet.</p>
                   )}
                 </div>
               )
@@ -704,6 +680,56 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                     <EducationSection items={profile.educations} lang={currentLang} />
                   ) : (
                     <p className="text-sm text-[var(--text-muted)] italic">No education added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Clubs */}
+          <div className="relative group mt-16 scroll-mt-24" id="clubs">
+            {editingSection === 'clubs' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Clubs (JSON array)</h3>
+                <textarea className="w-full h-64 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('clubs')} />
+              </div>
+            ) : (
+              ((profile.clubs && profile.clubs.length > 0) || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '동아리' : 'Clubs'}
+                    <EditButton onClick={() => startEdit('clubs', profile.clubs || [])} />
+                  </h2>
+                  {profile.clubs && profile.clubs.length > 0 ? (
+                    <ExperienceSection items={profile.clubs} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No clubs added yet.</p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          {/* Language Scores */}
+          <div className="relative group mt-16 scroll-mt-24" id="englishScores">
+            {editingSection === 'englishScores' ? (
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 rounded-xl border border-[var(--border)] animate-in fade-in zoom-in-95">
+                <h3 className="text-lg font-bold mb-2">Edit Language Scores (JSON array)</h3>
+                <textarea className="w-full h-48 border border-[var(--border)] rounded p-3 font-mono text-xs bg-white dark:bg-zinc-950 outline-none resize-y" value={jsonText} onChange={e => setJsonText(e.target.value)} spellCheck={false} />
+                <EditorActions onCancel={cancelEdit} onSave={() => saveEdit('englishScores')} />
+              </div>
+            ) : (
+              (formattedEnglishScores.length > 0 || isGlobalEditMode) && (
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold tracking-tight border-b border-[var(--border)] pb-2 relative">
+                    {currentLang === 'ko' ? '어학 점수' : 'Language Scores'}
+                    <EditButton onClick={() => startEdit('englishScores', profile.englishScores || [])} />
+                  </h2>
+                  {formattedEnglishScores.length > 0 ? (
+                    <ListSection items={formattedEnglishScores} />
+                  ) : (
+                    <p className="text-sm text-[var(--text-muted)] italic">No language scores added yet.</p>
                   )}
                 </div>
               )
