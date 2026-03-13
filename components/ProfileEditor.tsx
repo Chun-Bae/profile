@@ -39,7 +39,9 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
   const [activeSection, setActiveSection] = useState<string>('intro')
 
   // Lifted state for Portfolio Expand/Collapse All
-  const [expandedPortfolioIndices, setExpandedPortfolioIndices] = useState<number[]>([]);
+  const [expandedPortfolioIndices, setExpandedPortfolioIndices] = useState<number[]>(
+    initialProfileKO.portfolio?.map((_, i) => i) || []
+  );
   const [selectedBadge, setSelectedBadge] = useState<string>('all');
 
   useEffect(() => {
@@ -479,7 +481,14 @@ export default function ProfileEditor({ initialProfileKO, initialProfileEN }: { 
                         {allBadges.length > 0 && (
                           <select
                             value={selectedBadge}
-                            onChange={e => { setSelectedBadge(e.target.value); setExpandedPortfolioIndices([]); }}
+                            onChange={e => {
+                              const nextBadge = e.target.value;
+                              setSelectedBadge(nextBadge);
+                              const nextFiltered = nextBadge === 'all'
+                                ? profile.portfolio
+                                : profile.portfolio.filter(p => p.badges?.includes(nextBadge));
+                              setExpandedPortfolioIndices(nextFiltered.map((_, i) => i));
+                            }}
                             className="text-sm bg-[var(--background)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] cursor-pointer"
                           >
                             <option value="all">{currentLang === 'ko' ? '전체' : 'All'}</option>
